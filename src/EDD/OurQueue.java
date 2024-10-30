@@ -3,6 +3,7 @@ package EDD;
 /**
  *
  * @author B-St
+ * @param <T>
  */
 public class OurQueue<T> {
 
@@ -21,7 +22,7 @@ public class OurQueue<T> {
     }
 
     public void insert(T data) {
-        
+
         SimpleNode<T> newNode = new SimpleNode(data);
 
         if (this.isEmpty()) {
@@ -44,6 +45,34 @@ public class OurQueue<T> {
         this.size--;
 
         return popped.getData();
+    }
+
+    public boolean remove(T data) {
+        if (isEmpty()) {
+            return false; // La cola está vacía
+        }
+
+        // Si el primer elemento es el que queremos eliminar
+        if (pFirst.getData().equals(data)) {
+            pop(); // Si es el primer elemento, simplemente lo eliminamos
+            return true;
+        }
+
+        // Buscamos el nodo que contiene el dato
+        SimpleNode<T> current = pFirst;
+        while (current.getpNext() != null) {
+            if (current.getpNext().getData().equals(data)) {
+                // Elimina el nodo
+                current.setpNext(current.getpNext().getpNext());
+                if (current.getpNext() == null) { // Si estamos eliminando el último nodo
+                    pLast = current; // Actualiza pLast
+                }
+                size--;
+                return true; // Elemento eliminado
+            }
+            current = current.getpNext();
+        }
+        return false; // No se encontró el elemento
     }
 
     public SimpleNode<T> getpFirst() {
@@ -69,7 +98,5 @@ public class OurQueue<T> {
     public void setSize(int size) {
         this.size = size;
     }
-    
-    
 
 }

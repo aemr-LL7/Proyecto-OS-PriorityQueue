@@ -1,6 +1,7 @@
 
 import EDD.SimpleList;
 import Classes.Character;
+import Classes.SimulateFight;
 import GUI.Principal;
 
 /*
@@ -13,21 +14,20 @@ import GUI.Principal;
  */
 public class Main {
 
+    public static int battleDuration = 10;
+
+    // Crea la simulación con dos estudios
+    public static SimulateFight simulation = new SimulateFight("LucasArt", "Pinewood", battleDuration);
+
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         // TODO code application logic here
-
-        SimpleList myList = new SimpleList();
-        myList.printList();
-        System.out.println("");
-
-        Character obj1 = new Character("SW01", "Star Wars");
-        obj1.printCHRAttribs();
-
-        Principal mainwind = new Principal();
-        mainwind.setVisible(true);
+        simulation.start();
+//        Principal mainwind = new Principal();
+//        mainwind.setVisible(true);
     }
 
 }

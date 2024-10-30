@@ -19,10 +19,10 @@ public class Studio extends Thread {
 
     //Queue section
     private SimpleList<Character> chr_list;
-    private OurQueue prior1_queue;
-    private OurQueue prior2_queue;
-    private OurQueue prior3_queue;
-    private OurQueue reinforcement_queue;
+    private OurQueue<Character> prior1_queue;
+    private OurQueue<Character> prior2_queue;
+    private OurQueue<Character> prior3_queue;
+    private OurQueue<Character> reinforcement_queue;
 
     public Studio(String studioLabel) {
         this.studioLabel = studioLabel;
@@ -30,6 +30,7 @@ public class Studio extends Thread {
         this.prior2_queue = new OurQueue();
         this.prior3_queue = new OurQueue();
         this.reinforcement_queue = new OurQueue();
+        this.chr_list = new SimpleList(); // Inicializa la lista de personajes
         this.idCounter = 0;
     }
 
@@ -38,6 +39,38 @@ public class Studio extends Thread {
         Character newCharacter = new Character(characterId, this.getStudioLabel());
         this.getChr_list().addAtTheEnd(newCharacter); // Agrega el personaje a la lista de personajes disponibles
         return newCharacter;
+    }
+
+    public void removeCharacter(Character characterToRemove) {
+        // Intentar eliminar de la lista de personajes
+        if (!chr_list.isEmpty()) {
+            chr_list.delete(characterToRemove);
+            System.out.println("Removed character from character list: " + characterToRemove);
+        } else {
+            System.out.println("Character not found in character list: " + characterToRemove);
+        }
+
+        // Intentar eliminar de cada cola
+        boolean foundInQueue = false;
+
+        foundInQueue = prior1_queue.remove(characterToRemove);
+        if (foundInQueue) {
+            System.out.println("Removed character from priority 1 queue: " + characterToRemove);
+        }
+
+        foundInQueue = prior2_queue.remove(characterToRemove);
+        if (foundInQueue) {
+            System.out.println("Removed character from priority 2 queue: " + characterToRemove);
+        }
+
+        foundInQueue = prior3_queue.remove(characterToRemove);
+        if (foundInQueue) {
+            System.out.println("Removed character from priority 3 queue: " + characterToRemove);
+        }
+
+        if (!foundInQueue) {
+            System.out.println("Character not found in any queue: " + characterToRemove);
+        }
     }
 
     public void starvationUpdate() {
