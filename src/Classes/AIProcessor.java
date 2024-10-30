@@ -33,7 +33,7 @@ public class AIProcessor extends Thread {
         if (fighter1.getStrength_pts() < fighter2.getStrength_pts()) {
             return fighter2;
         }
-        return (fighter1.getAgility_pts() >= fighter2.getAgility_pts()) ? fighter1 : fighter2;
+        return (fighter1.getAgilityModifier() >= fighter2.getAgilityModifier()) ? fighter1 : fighter2;
     }
 
     private void logWinner(Character winner) {

@@ -11,21 +11,47 @@ package Classes;
 public class Character {
 
     private String id;
+    private String name;
+    
     private int health_pts;
     private int strength_pts;
-    private int agility_pts;
-    private boolean skills;  // Verdadero si sus habilidades son de calidad, Falso caso contrario
-    private int prio_level;
+    private int block_factor;
+    
+    private int agilityModifier;//Extra a la iniciativa por calidad
+    private int attackModifier;// Extra al ataque por calidad
+    private int defenceModifier;//Extra al bloqueo por calidad
+    
+//    private boolean skills;  // Verdadero si sus habilidades son de calidad, Falso caso contrario
+    private int prio_level; //Prioridad actual del personaje
+    private int quality; //calidad del personaje: excelente-0, promedio-1, malo-2, 4-FAGSHIP(sin implementar). La calidad determina los stats, la prioridad cuando pelean.
     private int starvation_counter; // Para incrementar prioridad en momentos de inanicion
     private String series; // "Star Wars" o "Star Trek"
 
-    public Character(String id, String series) {
+    //Las peleas se definen en 4 rondas, el que tenga mas puntos al final es el ganador, sin importar si mato o no al otro. Introducir mecanicas de criticos y de muerte.
+    public Character(String id, String name, String series, int quality) {
         this.id = id;
         this.series = series;
+        this.name = name;
+        this.quality = quality;
         this.health_pts = this.generateHealthPoints();
         this.strength_pts = this.generateStrengthPoints();
-        this.agility_pts = this.generateAgilityPoints();
-        this.skills = this.generateSkills();
+        this.block_factor = this.generateBlockFactor();
+        this.agilityModifier = this.generateAgilityModifier();
+//        this.skills = this.generateSkills();
+        this.prio_level = this.determinePriority();
+        this.starvation_counter = 0;
+    }
+    
+        public Character(String id, String name, String series) {
+        this.id = id;
+        this.series = series;
+        this.name = name;
+        this.quality = generateRandomQuality();
+        this.health_pts = this.generateHealthPoints();
+        this.strength_pts = this.generateStrengthPoints();
+        this.block_factor = this.generateBlockFactor();
+        this.agilityModifier = this.generateAgilityModifier();
+//        this.skills = this.generateSkills();
         this.prio_level = this.determinePriority();
         this.starvation_counter = 0;
     }
@@ -34,38 +60,96 @@ public class Character {
         System.out.println("Character ID: " + this.getId());
         System.out.println("Health Points: " + this.getHealth_pts());
         System.out.println("Strength: " + this.getStrength_pts());
-        System.out.println("Agility: " + this.getAgility_pts());
-        System.out.println("Has Skills: " + (this.isSkills() ? "Yes" : "No"));
+        System.out.println("Agility: " + this.getAgilityModifier());
+//        System.out.println("Has Skills: " + (this.isSkills() ? "Yes" : "No"));
         System.out.println("Priority Level: " + this.getPrio_level());
         System.out.println("-----------------------------");
     }
 
     // Metodos para generar atributos del pj, basado en las probs mencionadas en el enunciado
     private int generateHealthPoints() {
-        double randomValue = Math.random();
-        if (randomValue < 0.7) { // 70% de probabilidad de ser de calidad
-            return (int) (Math.random() * 106) + 95; // Rango: 95-200
-        } else {
-            return (int) (Math.random() * 106) + 95; // rango min que sea 95
+        int baseHp = (int) (Math.random() * 106);
+
+        if (this.quality == 0) {
+            return (int) (baseHp + 95);//de 95 a 200
+        } else if (this.quality == 1) {
+            return (int) (baseHp + 75);//de 75 a 180
+        } else if (this.quality == 2) {
+            return (int) (baseHp + 55);//de 55 a 160
         }
+
+        return 0;
     }
 
     private int generateStrengthPoints() {
-        double randomValue = Math.random();
-        if (randomValue < 0.5) { // 50% de probabilidad de ser de calidad
-            return (int) (Math.random() * 116) + 35; // Rango: 35-150
-        } else {
-            return (int) (Math.random() * 30) + 20; // Este rango es mas bajo para asegurar la calidad
+        int baseAtt = (int) (Math.random() * 51);
+
+        if (this.quality == 0) {
+            return (int) (baseAtt + 50); //de 50 a 100
+        } else if (this.quality == 1) {
+            return (int) (baseAtt + 40); //de 40 a 100
+        } else if (this.quality == 2) {
+            return (int) (baseAtt + 30); //de 30 a 100
         }
+
+        return 0;
+
     }
 
-    private int generateAgilityPoints() {
-        double randomValue = Math.random();
-        if (randomValue < 0.4) { // 40% de probabilidad de ser de calidad
-            return (int) (Math.random() * 131) + 30; // Rango: 30-160
-        } else {
-            return (int) (Math.random() * 10) + 10; // Min de 10 para asegurar que no sea demasiado bajo
+    private int generateAgilityModifier() {
+
+        //speed, con esta se define quien va primero: 1d6+AgilityPoints
+        if (this.quality == 0) {
+            return (int) (Math.random() * 6)+2;
+        } else if (this.quality == 1) {
+            return (int) (Math.random() * 6)+1;
+        } else if (this.quality == 2) {
+            return (int) (Math.random() * 6)+0;
         }
+
+        return 0;
+
+    }
+
+    private int generatAttackModifier() {
+
+        if (this.quality == 0) {
+            return (int) (Math.random() * 6)+2;
+        } else if (this.quality == 1) {
+            return (int) (Math.random() * 6)+1;
+        } else if (this.quality == 2) {
+            return (int) (Math.random() * 6)+0;
+        }
+
+        return 0;
+    }
+
+    private int generateDefenceModifier() {
+        
+        if (this.quality == 0) {
+            return (int) (Math.random() * 6)+2;
+        } else if (this.quality == 1) {
+            return (int) (Math.random() * 6)+1;
+        } else if (this.quality == 2) {
+            return (int) (Math.random() * 6)+0;
+        }
+
+        return 0;
+    }
+
+    private int generateBlockFactor() {
+        //Este es el dano que se niega siempre por la defenza del personaje.
+
+        if (this.quality == 0) {
+            return (int) (Math.random() * 51); //de 0 a 50
+        } else if (this.quality == 1) {
+            return (int) (int) (Math.random() * 41); //de 0 a 40
+        } else if (this.quality == 2) {
+            return (int) (int) (Math.random() * 31); //de 0 a 30
+        }
+
+        return 0;
+
     }
 
     private boolean generateSkills() {
@@ -76,27 +160,44 @@ public class Character {
     private int determinePriority() {
         int qualityCount = 0;
 
-        if (this.getHealth_pts() >= 100) { // Rango de salud: 100-200
+        if (this.getHealth_pts() >= 128) { // Rango de salud: 100-200
             qualityCount++;
         }
-        if (this.getStrength_pts() >= 50) { // Rango de fuerza: 50-150
+        
+        if (this.getStrength_pts() >= 65) { // Rango de fuerza: 50-150
             qualityCount++;
         }
-        if (this.getAgility_pts() >= 30) { // Rango de agilidad: 30-160
+        
+        if (this.getBlock_factor() >= 20){
             qualityCount++;
         }
-        if (this.isSkills()) { // Verifica tiene habilidades
+        
+        if (this.getAgilityModifier() >= 5.5) { // Rango de agilidad: 30-160
             qualityCount++;
         }
+        
+        if (this.getAttackModifier() >= 5.5){
+            qualityCount++;
+        }
+        
+        if (this.getDefenceModifier() >= 5.5){
+            qualityCount++;
+        }
+        
+//        if (this.isSkills()) { // Verifica tiene habilidades
+//            qualityCount++;
+//        }
 
         // Nivel de prioridad
         if (qualityCount >= 3) {
-            return 1; // Exceptional
+            return 0; // Exceptional
         } else if (qualityCount == 2) {
-            return 2; // Average
-        } else {
-            return 3; // Deficient
+            return 1; // Average
+        } else if (qualityCount <2) {
+            return 2; // Deficient
         }
+        
+        return 2;
     }
 
     public void incrementStarvationCounter() {
@@ -150,32 +251,32 @@ public class Character {
     }
 
     /**
-     * @return the agility_pts
+     * @return the agilityModifier
      */
-    public int getAgility_pts() {
-        return agility_pts;
+    public int getAgilityModifier() {
+        return agilityModifier;
     }
 
     /**
-     * @param agility_pts the agility_pts to set
+     * @param agility_pts the agilityModifier to set
      */
-    public void setAgility_pts(int agility_pts) {
-        this.agility_pts = agility_pts;
+    public void setAgilityModifier(int agility_pts) {
+        this.agilityModifier = agility_pts;
     }
 
-    /**
-     * @return the skills
-     */
-    public boolean isSkills() {
-        return skills;
-    }
-
-    /**
-     * @param skills the skills to set
-     */
-    public void setSkills(boolean skills) {
-        this.skills = skills;
-    }
+//    /**
+//     * @return the skills
+//     */
+//    public boolean isSkills() {
+//        return skills;
+//    }
+//
+//    /**
+//     * @param skills the skills to set
+//     */
+//    public void setSkills(boolean skills) {
+//        this.skills = skills;
+//    }
 
     /**
      * @return the prio_level
@@ -218,5 +319,56 @@ public class Character {
     public void setSeries(String series) {
         this.series = series;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getQuality() {
+        return quality;
+    }
+    public int getBlock_factor() {
+        return block_factor;
+    }
+
+    public void setBlock_factor(int block_factor) {
+        this.block_factor = block_factor;
+    }
+
+    public int getAttackModifier() {
+        return attackModifier;
+    }
+
+    public void setAttackModifier(int attackModifier) {
+        this.attackModifier = attackModifier;
+    }
+
+    public int getDefenceModifier() {
+        return defenceModifier;
+    }
+
+    public void setDefenceModifier(int defenceModifier) {
+        this.defenceModifier = defenceModifier;
+    }
+
+    private int generateRandomQuality() {
+        int qualityModifier = (int)(Math.random()*101);
+        
+        if (qualityModifier >= 70){
+            return 0;
+        } else if (qualityModifier < 70 && qualityModifier >= 50){
+            return 1;
+        } else if (qualityModifier < 50){
+            return 2;
+        }
+        
+        return 2;
+    }
+    
+    
 
 }

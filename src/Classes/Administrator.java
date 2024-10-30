@@ -17,22 +17,26 @@ public class Administrator {
     private Studio secondStudio; // Star Trek
     private static final double NEW_CHAR_PROB = 0.8;
 
-    public Administrator(Studio studioStarWars, Studio studioStarTrek) {
+    public Administrator(Studio studioStarWars, Studio studioStarTrek, int ciclickCheck) {
         this.firstStudio = studioStarWars;
         this.secondStudio = studioStarTrek;
-        this.cycleForReviewCount = 0;
+        this.cycleForReviewCount = ciclickCheck;
     }
 
+    //Seleccionador de personaje pa la pelea por estudio
     public Character selectFighter(Studio studio) {
         if (!studio.getPrior1_queue().isEmpty()) {
             return (Character) studio.getPrior1_queue().pop();
         }
+
         if (!studio.getPrior2_queue().isEmpty()) {
             return (Character) studio.getPrior2_queue().pop();
         }
+
         if (!studio.getPrior3_queue().isEmpty()) {
             return (Character) studio.getPrior3_queue().pop();
         }
+
         return null;
     }
 

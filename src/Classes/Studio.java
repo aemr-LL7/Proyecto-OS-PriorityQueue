@@ -36,7 +36,7 @@ public class Studio extends Thread {
 
     public Character createCharacter() {
         String characterId = this.getStudioLabel() + "_" + this.idCounter++; // Crea un ID unico para el personaje
-        Character newCharacter = new Character(characterId, this.getStudioLabel());
+        Character newCharacter = new Character(characterId,"PLACEHOLDER", this.getStudioLabel(), 0);
         this.getChr_list().addAtTheEnd(newCharacter); // Agrega el personaje a la lista de personajes disponibles
         return newCharacter;
     }
@@ -79,13 +79,13 @@ public class Studio extends Thread {
             character.incrementStarvationCounter(); // Incrementa el contador de inanicion
 
             // Verifica si el contador ha llegado a 8
-            if (character.getStarvation_counter() >= 8) {
+            if (character.getStarvation_counter() == 8) {
                 // Reinicia el contador
                 character.resetStarvationCounter();
 
                 // Cambia la prioridad del personaje
-                if (character.getPrio_level() < 3) { // Si no es de prioridad 1
-                    character.setPrio_level(character.getPrio_level() + 1); // Incrementa la prioridad
+                if (character.getPrio_level() >0) { // Si no es de prioridad 1
+                    character.setPrio_level(character.getPrio_level() - 1); // Incrementa la prioridad
                 }
             }
         }

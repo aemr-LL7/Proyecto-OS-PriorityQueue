@@ -305,7 +305,7 @@ public class SimpleList<T> {
 
         if (currentNode != null) {
             if (previousNode == null) {
-                this.setpFirst((SimpleNode<T>) currentNode.getpNext());
+                this.setpFirst(this.pFirst.getpNext());
             } else {
                 previousNode.setpNext(currentNode.getpNext());
             }

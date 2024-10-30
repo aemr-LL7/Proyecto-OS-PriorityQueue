@@ -18,11 +18,13 @@ public class SimulateFight extends Thread {
     private Administrator admin;
     private AIProcessor AI;
     private int duration;
+    
+    private int ciclickCheck;
 
     public SimulateFight(String labelStudio1, String labelStudio2, int battleDuration) {
         this.firstStudio = new Studio(labelStudio1);
         this.secondStudio = new Studio(labelStudio2);
-        this.admin = new Administrator(firstStudio, secondStudio);
+        this.admin = new Administrator(firstStudio, secondStudio, this.ciclickCheck);
         this.AI = new AIProcessor(admin, firstStudio, secondStudio);
         this.duration = battleDuration;
     }
