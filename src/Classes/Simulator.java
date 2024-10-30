@@ -11,7 +11,7 @@ import java.util.logging.Logger;
  *
  * @author andre
  */
-public class SimulateFight extends Thread {
+public class Simulator extends Thread {
 
     private Studio firstStudio;
     private Studio secondStudio;
@@ -21,7 +21,7 @@ public class SimulateFight extends Thread {
     
     private int ciclickCheck;
 
-    public SimulateFight(String labelStudio1, String labelStudio2, int battleDuration) {
+    public Simulator(String labelStudio1, String labelStudio2, int battleDuration) {
         this.firstStudio = new Studio(labelStudio1);
         this.secondStudio = new Studio(labelStudio2);
         this.admin = new Administrator(firstStudio, secondStudio, this.ciclickCheck);
@@ -68,7 +68,7 @@ public class SimulateFight extends Thread {
                 AI.executeCombat(fighter1, fighter2);
 
             } catch (InterruptedException ex) {
-                Logger.getLogger(SimulateFight.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             // Control pasa de nuevo al administrador para gestionar el siguiente ciclo

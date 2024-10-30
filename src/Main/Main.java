@@ -1,7 +1,7 @@
 
 import EDD.SimpleList;
 import Classes.Character;
-import Classes.SimulateFight;
+import Classes.Simulator;
 import GUI.Principal;
 
 /*
@@ -17,7 +17,7 @@ public class Main {
     public static int battleDuration = 10;
 
     // Crea la simulación con dos estudios
-    public static SimulateFight simulation = new SimulateFight("LucasArt", "Pinewood", battleDuration);
+    public static Simulator simulation = new Simulator("LucasArt", "Pinewood", battleDuration);
 
     
     /**

@@ -11,7 +11,7 @@ import EDD.SimpleList;
  *
  * @author andre
  */
-public class Studio extends Thread {
+public class Studio{
 
     //Studio info section
     private String studioLabel;
