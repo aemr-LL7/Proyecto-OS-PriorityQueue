@@ -6,6 +6,7 @@ package Classes;
 
 import EDD.OurQueue;
 import java.util.Random;
+import java.util.concurrent.Semaphore;
 
 /**
  *
@@ -14,15 +15,13 @@ import java.util.Random;
 public class AIProcessor extends Thread {
 
     private Administrator admin;
-    private Studio firstStudio; // Star Wars
-    private Studio secondStudio; // Star Trek
     private OurQueue<Character> winnersQueue;
+    private Semaphore semaphore;
     private Object lock = new Object();
 
-    public AIProcessor(Administrator admin, Studio firstStudio, Studio secondStudio) {
+    public AIProcessor(Administrator admin, Semaphore semaphore) {
         this.admin = admin;
-        this.firstStudio = firstStudio;
-        this.secondStudio = secondStudio;
+        this.semaphore = semaphore;
         this.winnersQueue = new OurQueue<>();
     }
 
@@ -40,11 +39,32 @@ public class AIProcessor extends Thread {
         this.getWinnersQueue().insert(winner);
     }
 
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                // Espera señal del semáforo antes de iniciar un combate
+                this.getSemaphore().acquire();
+
+                // Obtiene los peleadores desde el administrador
+                Character fighter1 = getAdmin().provideFighter("Star Wars");
+                Character fighter2 = getAdmin().provideFighter("Star Trek");
+
+                this.executeCombat(fighter1, fighter2);
+
+            } catch (InterruptedException e) {
+                System.out.println("AIProcessor interrumpido: " + e.getMessage());
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+    }
+
     public void executeCombat(Character fighter1, Character fighter2) throws InterruptedException {
         synchronized (lock) {
 
             if (fighter1 == null || fighter2 == null) {
-                System.out.println("No hay suficientes personajes para iniciar un combate.");
+                System.out.println("Uno de los estudios se ha quedado sin peleadores. Finalizando simulacion--------");
                 return;
             }
 
@@ -58,27 +78,28 @@ public class AIProcessor extends Thread {
 
             if (outcome < 40) { // 40% de que haya un ganador
                 Character winner = determineWinner(fighter1, fighter2);
-                this.logWinner(winner);
+                logWinner(winner);
 
                 System.out.println("GANADOR: " + winner.getId() + " de " + (winner == fighter1 ? "Star Wars" : "Star Trek"));
-                System.out.println("El perdedor ha sido eliminado de la simulación.");
 
                 // Eliminar el perdedor de la simulación
                 if (winner.getId().equals(fighter1.getId())) {
-                    secondStudio.removeCharacter(fighter2);
+                    getAdmin().removeFighter(fighter2);
+                    System.out.println("El perdedor ha sido eliminado de la simulacion");
                 } else {
-                    firstStudio.removeCharacter(fighter1);
+                    getAdmin().removeFighter(fighter1);
+                    System.out.println("El perdedor ha sido eliminado de la simulacion");
                 }
 
             } else if (outcome < 67) { // 27% de empate
-                firstStudio.getPrior1_queue().insert(fighter1);
-                secondStudio.getPrior1_queue().insert(fighter2);
+                getAdmin().enqueueFighter(fighter1, 0);
+                getAdmin().enqueueFighter(fighter2, 0);
                 System.out.println("EMPATE: Ambos luchadores se encolan a la cola de NIVEL 1");
 
             } else { // 33% de no llevarse a cabo el combate
-                firstStudio.getReinforcement_queue().insert(fighter1);
-                secondStudio.getReinforcement_queue().insert(fighter2);
-                System.out.println("Sin Combate: Ambos luchadores han sido ingresado a la cola de refuerzo");
+                getAdmin().reinforceFighter(fighter1);
+                getAdmin().reinforceFighter(fighter2);
+                System.out.println("Sin Combate: Ambos luchadores han sido ingresados a la cola de refuerzo");
             }
         }
     }
@@ -98,34 +119,6 @@ public class AIProcessor extends Thread {
     }
 
     /**
-     * @return the firstStudio
-     */
-    public Studio getFirstStudio() {
-        return firstStudio;
-    }
-
-    /**
-     * @param firstStudio the firstStudio to set
-     */
-    public void setFirstStudio(Studio firstStudio) {
-        this.firstStudio = firstStudio;
-    }
-
-    /**
-     * @return the secondStudio
-     */
-    public Studio getSecondStudio() {
-        return secondStudio;
-    }
-
-    /**
-     * @param secondStudio the secondStudio to set
-     */
-    public void setSecondStudio(Studio secondStudio) {
-        this.secondStudio = secondStudio;
-    }
-
-    /**
      * @return the winnersQueue
      */
     public OurQueue<Character> getWinnersQueue() {
@@ -137,6 +130,20 @@ public class AIProcessor extends Thread {
      */
     public void setWinnersQueue(OurQueue<Character> winnersQueue) {
         this.winnersQueue = winnersQueue;
+    }
+
+    /**
+     * @return the semaphore
+     */
+    public Semaphore getSemaphore() {
+        return semaphore;
+    }
+
+    /**
+     * @param semaphore the semaphore to set
+     */
+    public void setSemaphore(Semaphore semaphore) {
+        this.semaphore = semaphore;
     }
 
 }

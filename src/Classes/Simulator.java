@@ -4,6 +4,7 @@
  */
 package Classes;
 
+import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,65 +19,182 @@ public class Simulator extends Thread {
     private Administrator admin;
     private AIProcessor AI;
     private int duration;
-    
-    private int ciclickCheck;
+    private int cycleCheck;
+    private Semaphore semaphore;
 
     public Simulator(String labelStudio1, String labelStudio2, int battleDuration) {
         this.firstStudio = new Studio(labelStudio1);
         this.secondStudio = new Studio(labelStudio2);
-        this.admin = new Administrator(firstStudio, secondStudio, this.ciclickCheck);
-        this.AI = new AIProcessor(admin, firstStudio, secondStudio);
+        this.semaphore = new Semaphore(1); // Control para gestionar el recurso compartido entre Simulator y AIProcessor
+        this.admin = new Administrator(getFirstStudio(), getSecondStudio(), this.getCycleCheck());
+        this.AI = new AIProcessor(getAdmin(), getSemaphore());
         this.duration = battleDuration;
+
     }
 
     @Override
     public void run() {
-        // Creación de los personajes iniciales
+        // Creación de los personajes iniciales usando getters y setters
         System.out.println("Iniciando la creación de personajes...");
-        for (int i = 0; i < 21; i++) {
-            Character character1 = firstStudio.createCharacter();
-            Character character2 = secondStudio.createCharacter();
-            System.out.println("Personaje creado para " + firstStudio.getStudioLabel() + ": " + character1.getId());
-            System.out.println("Personaje creado para " + secondStudio.getStudioLabel() + ": " + character2.getId());
+        for (int i = 0; i < 20; i++) {
+            Character character1 = getFirstStudio().createCharacter();
+            Character character2 = getSecondStudio().createCharacter();
+            System.out.println("Personaje creado para " + getFirstStudio().getStudioLabel() + ": " + character1.getId());
+            System.out.println("Personaje creado para " + getSecondStudio().getStudioLabel() + ": " + character2.getId());
         }
 
+        // Iniciar el hilo de AIProcessor
+        getAI().start();
         long startTime = System.currentTimeMillis();
-        long endTime = startTime + duration * 1000; // Convertir duración a milisegundos
+        long endTime = startTime + getDuration() * 1000; // Convertir duración a milisegundos
 
-        // Ciclo de simulación
+        // Ciclo de control de simulación
         while (System.currentTimeMillis() < endTime) {
-            System.out.println("\n--- Inicio de un nuevo ciclo de combate ---");
-
-            // Operación del administrador para actualizar colas y elegir personajes
-            System.out.println("El administrador está actualizando las colas y seleccionando personajes...");
-            admin.updateQueues();
-
-            // Validación de selección de personajes para combate
-            Character fighter1 = admin.selectFighter(firstStudio);
-            Character fighter2 = admin.selectFighter(secondStudio);
-            if (fighter1 == null || fighter2 == null) {
-                System.out.println("No hay suficientes personajes listos para combatir en esta ronda.");
-                continue;
-            }
-
-            System.out.println("Personaje seleccionado de " + firstStudio.getStudioLabel() + ": " + fighter1.getId());
-            System.out.println("Personaje seleccionado de " + secondStudio.getStudioLabel() + ": " + fighter2.getId());
-
-            // La AI selecciona personajes y lleva a cabo la simulación de la pelea
-            System.out.println("La IA está procesando el combate...");
             try {
-                AI.executeCombat(fighter1, fighter2);
+                // Espera antes de liberar el semáforo para un nuevo combate
+                Thread.sleep(100);
+
+                // Liberar el semáforo para permitir un ciclo de combate en AIProcessor
+                getSemaphore().release();
+
+                cycleCheck++;
+                // Cada dos ciclos, se solicita al administrador que agregue nuevos personajes
+                if (cycleCheck % 2 == 0) {
+                    getAdmin().updateQueues(); // Método que maneja la creación de nuevos personajes en Administrator
+                }
 
             } catch (InterruptedException ex) {
-                Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("Simulacion interrumpida: " + ex.getMessage());
+                Thread.currentThread().interrupt();
+                break;
             }
-
-            // Control pasa de nuevo al administrador para gestionar el siguiente ciclo
-            System.out.println("--- Fin del ciclo de combate ---");
-
         }
 
+        // Mostrar el estado final
         System.out.println("Simulación finalizada: tiempo de batalla completado.");
+
+        // Mostrar los personajes restantes en cada estudio
+        System.out.println("\nEstado final de los personajes:");
+        System.out.println(getFirstStudio().getStudioLabel() + " tiene los siguientes personajes:");
+        for (int i = 0; i < getFirstStudio().getChr_list().getSize(); i++) {
+            System.out.println("- " + getFirstStudio().getChr_list().getValueByIndex(i).getId());
+        }
+
+        System.out.println(getSecondStudio().getStudioLabel() + " tiene los siguientes personajes:");
+        for (int i = 0; i < getSecondStudio().getChr_list().getSize(); i++) {
+            System.out.println("- " + getSecondStudio().getChr_list().getValueByIndex(i).getId());
+        }
+
+        // Mostrar las colas de prioridad y refuerzo
+        System.out.println("\nColas de prioridad:");
+        System.out.println("Cola de " + getFirstStudio().getStudioLabel() + ": " + getFirstStudio().getPrior1_queue());
+        System.out.println("Cola de " + getFirstStudio().getStudioLabel() + ": " + getFirstStudio().getPrior2_queue());
+        System.out.println("Cola de " + getFirstStudio().getStudioLabel() + ": " + getFirstStudio().getPrior3_queue());
+        System.out.println("Cola de " + getSecondStudio().getStudioLabel() + ": " + getSecondStudio().getPrior1_queue());
+        System.out.println("Cola de " + getSecondStudio().getStudioLabel() + ": " + getSecondStudio().getPrior2_queue());
+        System.out.println("Cola de " + getSecondStudio().getStudioLabel() + ": " + getSecondStudio().getPrior3_queue());
+
+        System.out.println("\nColas de refuerzo:");
+        System.out.println("Cola de refuerzo de " + getFirstStudio().getStudioLabel() + ": " + getFirstStudio().getReinforcement_queue());
+        System.out.println("Cola de refuerzo de " + getSecondStudio().getStudioLabel() + ": " + getSecondStudio().getReinforcement_queue());
+    }
+
+    /**
+     * @return the firstStudio
+     */
+    public Studio getFirstStudio() {
+        return firstStudio;
+    }
+
+    /**
+     * @param firstStudio the firstStudio to set
+     */
+    public void setFirstStudio(Studio firstStudio) {
+        this.firstStudio = firstStudio;
+    }
+
+    /**
+     * @return the secondStudio
+     */
+    public Studio getSecondStudio() {
+        return secondStudio;
+    }
+
+    /**
+     * @param secondStudio the secondStudio to set
+     */
+    public void setSecondStudio(Studio secondStudio) {
+        this.secondStudio = secondStudio;
+    }
+
+    /**
+     * @return the admin
+     */
+    public Administrator getAdmin() {
+        return admin;
+    }
+
+    /**
+     * @param admin the admin to set
+     */
+    public void setAdmin(Administrator admin) {
+        this.admin = admin;
+    }
+
+    /**
+     * @return the AI
+     */
+    public AIProcessor getAI() {
+        return AI;
+    }
+
+    /**
+     * @param AI the AI to set
+     */
+    public void setAI(AIProcessor AI) {
+        this.AI = AI;
+    }
+
+    /**
+     * @return the duration
+     */
+    public int getDuration() {
+        return duration;
+    }
+
+    /**
+     * @param duration the duration to set
+     */
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    /**
+     * @return the cycleCheck
+     */
+    public int getCycleCheck() {
+        return cycleCheck;
+    }
+
+    /**
+     * @param cycleCheck the cycleCheck to set
+     */
+    public void setCycleCheck(int cycleCheck) {
+        this.cycleCheck = cycleCheck;
+    }
+
+    /**
+     * @return the semaphore
+     */
+    public Semaphore getSemaphore() {
+        return semaphore;
+    }
+
+    /**
+     * @param semaphore the semaphore to set
+     */
+    public void setSemaphore(Semaphore semaphore) {
+        this.semaphore = semaphore;
     }
 
 }

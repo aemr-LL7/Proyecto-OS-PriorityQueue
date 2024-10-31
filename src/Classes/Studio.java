@@ -35,43 +35,43 @@ public class Studio{
     }
 
     public Character createCharacter() {
-        String characterId = this.getStudioLabel() + "_" + this.idCounter++; // Crea un ID unico para el personaje
+        String characterId = this.getStudioLabel() + "-" + this.idCounter++; // Crea un ID unico para el personaje
         Character newCharacter = new Character(characterId,"PLACEHOLDER", this.getStudioLabel(), 0);
         this.getChr_list().addAtTheEnd(newCharacter); // Agrega el personaje a la lista de personajes disponibles
         return newCharacter;
     }
 
-    public void removeCharacter(Character characterToRemove) {
-        // Intentar eliminar de la lista de personajes
-        if (!chr_list.isEmpty()) {
-            chr_list.delete(characterToRemove);
-            System.out.println("Removed character from character list: " + characterToRemove);
-        } else {
-            System.out.println("Character not found in character list: " + characterToRemove);
-        }
-
-        // Intentar eliminar de cada cola
-        boolean foundInQueue = false;
-
-        foundInQueue = prior1_queue.remove(characterToRemove);
-        if (foundInQueue) {
-            System.out.println("Removed character from priority 1 queue: " + characterToRemove);
-        }
-
-        foundInQueue = prior2_queue.remove(characterToRemove);
-        if (foundInQueue) {
-            System.out.println("Removed character from priority 2 queue: " + characterToRemove);
-        }
-
-        foundInQueue = prior3_queue.remove(characterToRemove);
-        if (foundInQueue) {
-            System.out.println("Removed character from priority 3 queue: " + characterToRemove);
-        }
-
-        if (!foundInQueue) {
-            System.out.println("Character not found in any queue: " + characterToRemove);
-        }
-    }
+//    public void removeCharacter(Character characterToRemove) {
+//        // Intentar eliminar de la lista de personajes
+//        if (!chr_list.isEmpty()) {
+//            chr_list.delete(characterToRemove);
+//            System.out.println("Removed character from character list: " + characterToRemove);
+//        } else {
+//            System.out.println("Character not found in character list: " + characterToRemove);
+//        }
+//
+//        // Intentar eliminar de cada cola
+//        boolean foundInQueue = false;
+//
+//        foundInQueue = prior1_queue.remove(characterToRemove);
+//        if (foundInQueue) {
+//            System.out.println("Removed character from priority 1 queue: " + characterToRemove);
+//        }
+//
+//        foundInQueue = prior2_queue.remove(characterToRemove);
+//        if (foundInQueue) {
+//            System.out.println("Removed character from priority 2 queue: " + characterToRemove);
+//        }
+//
+//        foundInQueue = prior3_queue.remove(characterToRemove);
+//        if (foundInQueue) {
+//            System.out.println("Removed character from priority 3 queue: " + characterToRemove);
+//        }
+//
+//        if (!foundInQueue) {
+//            System.out.println("Character not found in any queue: " + characterToRemove);
+//        }
+//    }
 
     public void starvationUpdate() {
         for (int i = 0; i < chr_list.getSize(); i++) {
