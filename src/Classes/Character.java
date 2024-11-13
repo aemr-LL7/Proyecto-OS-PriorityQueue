@@ -258,6 +258,24 @@ public class Character {
         return 2;
     }
 
+    public int rollInitiative(){//simula 2d6 + el modificador de agilidad
+        int roll_1 = (int) (Math.random() * 6) +1;
+        int roll_2 = (int) (Math.random() * 6) +1;
+        return roll_1 + roll_2 + this.agilityModifier;
+    }
+    
+    public int rollAttack(){//simula 2d6 + el modificador de fuerza
+        int roll_1 = (int) (Math.random() * 6) +1;
+        int roll_2 = (int) (Math.random() * 6) +1;
+        return roll_1 + roll_2 + this.attackModifier;
+    }
+
+    public int rollDefence(){//simula 2d6 + el modificador de defenza
+        int roll_1 = (int) (Math.random() * 6) +1;
+        int roll_2 = (int) (Math.random() * 6) +1;
+        return roll_1 + roll_2 + this.defenceModifier;
+    }
+    
     public void incrementStarvationCounter() {
         this.setStarvation_counter(this.getStarvation_counter() + 1);
     }

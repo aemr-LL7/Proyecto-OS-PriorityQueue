@@ -27,14 +27,11 @@ public class AIProcessor extends Thread {
         this.duration = duration;
     }
 
-    private Character determineWinner(Character fighter1, Character fighter2) {
-        if (fighter1.getStrength_pts() > fighter2.getStrength_pts()) {
-            return fighter1;
-        }
-        if (fighter1.getStrength_pts() < fighter2.getStrength_pts()) {
-            return fighter2;
-        }
-        return (fighter1.getAgilityModifier() >= fighter2.getAgilityModifier()) ? fighter1 : fighter2;
+    private Character determineInitiativeWinner(Character fighter1, Character fighter2) {//check contest de iniciativa para una ronda.
+        int fighter1Initiative = fighter1.rollInitiative();
+        int fighter2Initiative = fighter2.rollInitiative();
+
+        return (fighter1Initiative >= fighter2Initiative) ? fighter1 : fighter2;
     }
 
     private void logWinner(Character winner) {
@@ -52,8 +49,49 @@ public class AIProcessor extends Thread {
                 Character fighter1 = getAdmin().provideFighter("Star Wars");
                 Character fighter2 = getAdmin().provideFighter("Star Trek");
 
-                this.executeCombat(fighter1, fighter2);
+                Character first = this.determineInitiativeWinner(fighter1, fighter2);
+                Character second = (first == fighter1) ? fighter2 : fighter1;
 
+                //contador de la vida de los personajes
+                int auxHp1 = fighter1.getHealth_pts();
+                int auxHp2 = fighter2.getHealth_pts();
+                
+                if (auxHp1 >=  0 && auxHp2 >= 0){
+                    
+                    //Ataca el primer personaje.
+                    int firstAttackRoll = first.rollAttack();
+                    
+                    //Defiende el segundo personaje.
+                    int secondDefenceRoll = second.rollDefence();
+                    
+                    //Se resta la fuerza del primero menos la defensa del segundo contra el segundo si logra defender el ataque.
+                    if (secondDefenceRoll >= firstAttackRoll){
+                        auxHp2 -= (first.getStrength_pts()- second.getBlock_factor());
+                    } else if (firstAttackRoll > secondDefenceRoll){
+                        //Se resta toda la fuerza del primero si no logra defender el segundo.
+                        auxHp2 -= (first.getStrength_pts());
+                    }
+                    
+                    //Ataca el segundo personaje
+                    int secondAttackRoll = second.rollAttack();
+                    
+                    //Defiende el primer personaje
+                    int firstDefenceRoll = first.rollAttack();
+                    
+                    if (firstDefenceRoll >= secondAttackRoll){
+                        auxHp1 -= (second.getStrength_pts()- first.getBlock_factor());
+                    } else if (secondAttackRoll > firstDefenceRoll){
+                        //Se resta toda la fuerza del primero si no logra defender el segundo.
+                        auxHp1 -= (second.getStrength_pts());
+                    }
+                    
+                    
+                }
+                
+                
+                
+                
+//                this.executeCombat(fighter1, fighter2);
             } catch (InterruptedException e) {
                 System.out.println("AIProcessor interrumpido: " + e.getMessage());
                 Thread.currentThread().interrupt();
@@ -78,13 +116,15 @@ public class AIProcessor extends Thread {
         int outcome = randomNum.nextInt(100);
 
         if (outcome < 40) { // 40% de que haya un ganador
-            Character winner = determineWinner(fighter1, fighter2);
-            logWinner(winner);
 
-            System.out.println("GANADOR: " + winner.getId() + " de " + (winner == fighter1 ? "Star Wars" : "Star Trek"));
+            //Se calcula iniciativa con un contest roll 
+            Character initiativeWinner = determineInitiativeWinner(fighter1, fighter2);
+            logWinner(initiativeWinner);
+
+            System.out.println("GANADOR: " + initiativeWinner.getId() + " de " + (initiativeWinner == fighter1 ? "Star Wars" : "Star Trek"));
 
             // Eliminar el perdedor de la simulación
-            if (winner.getId().equals(fighter1.getId())) {
+            if (initiativeWinner.getId().equals(fighter1.getId())) {
                 getAdmin().removeFighter(fighter2);
                 System.out.println("El perdedor ha sido eliminado de la simulacion");
             } else {
