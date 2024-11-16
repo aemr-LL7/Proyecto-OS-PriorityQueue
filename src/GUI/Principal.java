@@ -5,23 +5,58 @@
 package GUI;
 
 import javax.swing.JFrame;
+import javax.swing.ImageIcon;
+import Main.App;
 
 /**
  *
- * @author andre
+ * @author HP-Probook
  */
 public class Principal extends javax.swing.JFrame {
+
+    private static Principal mainFrameInstance;
+    App app = App.getInstance();
 
     /**
      * Creates new form Principal
      */
     public Principal() {
         initComponents();
-        // properties gui
+        // jframe config
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
-        this.setTitle("Main Menu");
+        this.setTitle("Main Battle View");
+
+        // Propiedades
+        IAStatusLabel.setText("");
+        winnerLabel.setText("");
+        
+        // Configurar el slider de velodiad 
+        battleDurationSlider.setOpaque(false);
+        battleDurationSlider.setMinimum(1);
+        battleDurationSlider.setMaximum(15);
+        battleDurationSlider.setValue(App.getBattleDuration());
+    }
+
+    public static synchronized Principal getPrincipalInstance() {
+        if (getMainFrameInstance() == null) {
+            setMainFrameInstance(new Principal());
+        }
+        return getMainFrameInstance();
+    }
+
+    // Método para actualizar la imagen en el JPanel
+    public void updateStarWarsImageIcon(ImageIcon newImageIcon) {
+        this.SWImageLabel.setIcon(newImageIcon);
+        revalidate();
+        repaint();
+    }
+
+    public void updateStarTrekImageIcon(ImageIcon newImageIcon) {
+        this.STImageLabel.setIcon(newImageIcon);
+        revalidate();
+        repaint();
     }
 
     /**
@@ -33,21 +68,343 @@ public class Principal extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        jPanel1 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        jSlider2 = new javax.swing.JSlider();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel25 = new javax.swing.JLabel();
+        jLabel28 = new javax.swing.JLabel();
+        jPanel5 = new javax.swing.JPanel();
+        battleDurationSlider = new javax.swing.JSlider();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jPanel6 = new javax.swing.JPanel();
+        jScrollPane10 = new javax.swing.JScrollPane();
+        jScrollPane11 = new javax.swing.JScrollPane();
+        jScrollPane12 = new javax.swing.JScrollPane();
+        jSlider4 = new javax.swing.JSlider();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jScrollPane13 = new javax.swing.JScrollPane();
+        jLabel15 = new javax.swing.JLabel();
+        jScrollPane20 = new javax.swing.JScrollPane();
+        FightPanel = new javax.swing.JPanel();
+        IAStatusLabel = new javax.swing.JLabel();
+        jLabel30 = new javax.swing.JLabel();
+        jLabel31 = new javax.swing.JLabel();
+        jLabel32 = new javax.swing.JLabel();
+        jLabel39 = new javax.swing.JLabel();
+        winnerLabel = new javax.swing.JLabel();
+        SWFighterCard = new javax.swing.JPanel();
+        SWImageLabel = new javax.swing.JLabel();
+        STFighterCard = new javax.swing.JPanel();
+        STImageLabel = new javax.swing.JLabel();
+        jLabel42 = new javax.swing.JLabel();
+        jLabel43 = new javax.swing.JLabel();
+        jLabel44 = new javax.swing.JLabel();
+        jLabel45 = new javax.swing.JLabel();
+        jLabel46 = new javax.swing.JLabel();
+        jLabel47 = new javax.swing.JLabel();
+        jLabel48 = new javax.swing.JLabel();
+        jLabel49 = new javax.swing.JLabel();
+        SWQueuePanel = new javax.swing.JPanel();
+        jScrollPane17 = new javax.swing.JScrollPane();
+        jScrollPane18 = new javax.swing.JScrollPane();
+        jScrollPane9 = new javax.swing.JScrollPane();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
+        jLabel21 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        SWLogoLabel = new javax.swing.JLabel();
+        STQueuePanel = new javax.swing.JPanel();
+        jScrollPane16 = new javax.swing.JScrollPane();
+        jScrollPane15 = new javax.swing.JScrollPane();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        STLogoLabel = new javax.swing.JLabel();
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1366, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 768, Short.MAX_VALUE)
-        );
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel1.setBackground(new java.awt.Color(0, 102, 204));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel4.setBackground(new java.awt.Color(255, 51, 51));
+        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanel4.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 330, 90));
+
+        jScrollPane5.setViewportView(jScrollPane6);
+
+        jPanel4.add(jScrollPane5, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 60, 330, 90));
+        jPanel4.add(jSlider2, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 80, 330, 60));
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel4.setText("Ajuste la velocidad");
+        jPanel4.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, -1, -1));
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
+        jLabel5.setText("Ajuste la velocidad");
+        jPanel4.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 20, -1, -1));
+
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel6.setText("Ajuste la velocidad");
+        jPanel4.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 20, -1, -1));
+
+        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 630, 1190, 170));
+
+        jLabel25.setFont(new java.awt.Font("Rockwell Extra Bold", 0, 48)); // NOI18N
+        jLabel25.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel25.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel25.setText("ARENA");
+        jPanel1.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 10, -1, -1));
+
+        jLabel28.setFont(new java.awt.Font("Tw Cen MT Condensed Extra Bold", 0, 36)); // NOI18N
+        jLabel28.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel28.setText("ROUND: 0");
+        jPanel1.add(jLabel28, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 70, -1, -1));
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 0, 730, 120));
+
+        jPanel5.setBackground(new java.awt.Color(0, 102, 204));
+        jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        battleDurationSlider.setMajorTickSpacing(9);
+        battleDurationSlider.setMaximum(20);
+        battleDurationSlider.setMinimum(1);
+        battleDurationSlider.setMinorTickSpacing(1);
+        battleDurationSlider.setPaintLabels(true);
+        battleDurationSlider.setPaintTicks(true);
+        battleDurationSlider.setToolTipText("Slider de Velocidad");
+        battleDurationSlider.setValue(10);
+        battleDurationSlider.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        battleDurationSlider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                battleDurationSliderStateChanged(evt);
+            }
+        });
+        jPanel5.add(battleDurationSlider, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 60, 330, 60));
+
+        jLabel8.setFont(new java.awt.Font("Tw Cen MT Condensed", 1, 24)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel8.setText("AJUSTE LA VELOCIDAD");
+        jPanel5.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 30, -1, -1));
+
+        jLabel9.setFont(new java.awt.Font("Tw Cen MT Condensed", 1, 24)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel9.setText("COLA DE REFUERZO 2");
+        jPanel5.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 20, -1, -1));
+
+        jPanel6.setBackground(new java.awt.Color(255, 51, 51));
+        jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanel6.add(jScrollPane10, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 330, 90));
+
+        jScrollPane11.setViewportView(jScrollPane12);
+
+        jPanel6.add(jScrollPane11, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 60, 330, 90));
+        jPanel6.add(jSlider4, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 80, 330, 60));
+
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel10.setText("Ajuste la velocidad");
+        jPanel6.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, -1, -1));
+
+        jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
+        jLabel11.setText("Ajuste la velocidad");
+        jPanel6.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 20, -1, -1));
+
+        jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel12.setText("Ajuste la velocidad");
+        jPanel6.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 20, -1, -1));
+
+        jPanel5.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 630, 1190, 170));
+        jPanel5.add(jScrollPane13, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 50, 260, 70));
+
+        jLabel15.setFont(new java.awt.Font("Tw Cen MT Condensed", 1, 24)); // NOI18N
+        jLabel15.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel15.setText("COLA DE REFUERZO 1");
+        jPanel5.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, -1, -1));
+        jPanel5.add(jScrollPane20, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 50, 260, 70));
+
+        getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 660, 1270, 140));
+
+        FightPanel.setBackground(new java.awt.Color(238, 216, 216));
+        FightPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        IAStatusLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 36)); // NOI18N
+        IAStatusLabel.setText("IA STATUS: ");
+        FightPanel.add(IAStatusLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 480, -1, -1));
+
+        jLabel30.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 24)); // NOI18N
+        jLabel30.setText("Vida actual: ");
+        FightPanel.add(jLabel30, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 370, -1, -1));
+
+        jLabel31.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 24)); // NOI18N
+        jLabel31.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel31.setText("NAME");
+        FightPanel.add(jLabel31, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 330, -1, -1));
+
+        jLabel32.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 24)); // NOI18N
+        jLabel32.setText("Vida actual: ");
+        FightPanel.add(jLabel32, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 370, -1, -1));
+
+        jLabel39.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 24)); // NOI18N
+        jLabel39.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel39.setText("NAME");
+        FightPanel.add(jLabel39, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 330, -1, -1));
+
+        winnerLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
+        winnerLabel.setText("Ganador");
+        FightPanel.add(winnerLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 410, -1, -1));
+
+        SWFighterCard.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        SWImageLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        SWImageLabel.setText("jLabel1");
+        SWFighterCard.add(SWImageLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(4, 5, 200, 210));
+
+        FightPanel.add(SWFighterCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 90, 210, 220));
+
+        STFighterCard.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        STImageLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        STImageLabel.setText("jLabel2");
+        STFighterCard.add(STImageLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(4, 5, 200, 210));
+
+        FightPanel.add(STFighterCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 90, 210, 220));
+
+        jLabel42.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 32)); // NOI18N
+        jLabel42.setText("ANNOUNCER");
+        FightPanel.add(jLabel42, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 20, -1, -1));
+
+        jLabel43.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
+        jLabel43.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel43.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Assets/icons/agility32.png"))); // NOI18N
+        jLabel43.setText("0");
+        FightPanel.add(jLabel43, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, -1, -1));
+
+        jLabel44.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
+        jLabel44.setText("Ganador");
+        FightPanel.add(jLabel44, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 370, -1, -1));
+
+        jLabel45.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
+        jLabel45.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel45.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Assets/icons/heart32.png"))); // NOI18N
+        jLabel45.setText("0");
+        FightPanel.add(jLabel45, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, -1, -1));
+
+        jLabel46.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
+        jLabel46.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel46.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Assets/icons/shield32.png"))); // NOI18N
+        jLabel46.setText("0");
+        FightPanel.add(jLabel46, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, -1, -1));
+
+        jLabel47.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
+        jLabel47.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel47.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Assets/icons/heart32.png"))); // NOI18N
+        jLabel47.setText("0");
+        FightPanel.add(jLabel47, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 100, -1, -1));
+
+        jLabel48.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
+        jLabel48.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel48.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Assets/icons/shield32.png"))); // NOI18N
+        jLabel48.setText("0");
+        FightPanel.add(jLabel48, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 150, -1, -1));
+
+        jLabel49.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
+        jLabel49.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel49.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Assets/icons/agility32.png"))); // NOI18N
+        jLabel49.setText("0");
+        FightPanel.add(jLabel49, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 200, -1, -1));
+
+        getContentPane().add(FightPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 120, 730, 540));
+
+        SWQueuePanel.setBackground(new java.awt.Color(0, 0, 0));
+        SWQueuePanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        SWQueuePanel.add(jScrollPane17, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 240, 210, 90));
+        SWQueuePanel.add(jScrollPane18, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 390, 210, 90));
+        SWQueuePanel.add(jScrollPane9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 540, 210, 90));
+
+        jLabel13.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel13.setFont(new java.awt.Font("Tw Cen MT Condensed", 1, 24)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel13.setText("COLA PRIORIDAD 3");
+        SWQueuePanel.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 510, -1, -1));
+
+        jLabel20.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel20.setFont(new java.awt.Font("Tw Cen MT Condensed", 1, 24)); // NOI18N
+        jLabel20.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel20.setText("COLA PRIORIDAD 1");
+        SWQueuePanel.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 210, -1, -1));
+
+        jLabel21.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel21.setFont(new java.awt.Font("Tw Cen MT Condensed", 1, 24)); // NOI18N
+        jLabel21.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel21.setText("COLA PRIORIDAD 2");
+        SWQueuePanel.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, -1, -1));
+
+        jLabel16.setFont(new java.awt.Font("Tw Cen MT", 1, 36)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel16.setText("VICTORIAS: 0");
+        SWQueuePanel.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, -1, -1));
+
+        SWLogoLabel.setForeground(new java.awt.Color(255, 255, 255));
+        SWLogoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        SWLogoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Assets/logos/starwars-logo.png"))); // NOI18N
+        SWQueuePanel.add(SWLogoLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, -1, 80));
+
+        getContentPane().add(SWQueuePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 270, 660));
+
+        STQueuePanel.setBackground(new java.awt.Color(0, 0, 0));
+        STQueuePanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        STQueuePanel.add(jScrollPane16, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 240, 210, 90));
+        STQueuePanel.add(jScrollPane15, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 390, 210, 90));
+        STQueuePanel.add(jScrollPane7, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 540, 210, 90));
+
+        jLabel7.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel7.setFont(new java.awt.Font("Tw Cen MT Condensed", 1, 24)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel7.setText("COLA PRIORIDAD 3");
+        STQueuePanel.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 510, -1, -1));
+
+        jLabel17.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel17.setFont(new java.awt.Font("Tw Cen MT Condensed", 1, 24)); // NOI18N
+        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel17.setText("COLA PRIORIDAD 1");
+        STQueuePanel.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 210, -1, -1));
+
+        jLabel18.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel18.setFont(new java.awt.Font("Tw Cen MT Condensed", 1, 24)); // NOI18N
+        jLabel18.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel18.setText("COLA PRIORIDAD 2");
+        STQueuePanel.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, -1, -1));
+
+        jLabel19.setFont(new java.awt.Font("Tw Cen MT", 1, 36)); // NOI18N
+        jLabel19.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel19.setText("VICTORIAS: 0");
+        STQueuePanel.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 130, -1, -1));
+
+        STLogoLabel.setForeground(new java.awt.Color(255, 255, 255));
+        STLogoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        STLogoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Assets/logos/startrek-logo.png"))); // NOI18N
+        STQueuePanel.add(STLogoLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, -1, 60));
+
+        getContentPane().add(STQueuePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(1000, 0, 270, 660));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void battleDurationSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_battleDurationSliderStateChanged
+        // TODO add your handling code here:
+        int newSpeed = this.getBattleDurationSlider().getValue();
+    }//GEN-LAST:event_battleDurationSliderStateChanged
 
     /**
      * @param args the command line arguments
@@ -85,5 +442,97 @@ public class Principal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel FightPanel;
+    private javax.swing.JLabel IAStatusLabel;
+    private javax.swing.JPanel STFighterCard;
+    private javax.swing.JLabel STImageLabel;
+    private javax.swing.JLabel STLogoLabel;
+    private javax.swing.JPanel STQueuePanel;
+    private javax.swing.JPanel SWFighterCard;
+    private javax.swing.JLabel SWImageLabel;
+    private javax.swing.JLabel SWLogoLabel;
+    private javax.swing.JPanel SWQueuePanel;
+    private javax.swing.JSlider battleDurationSlider;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel28;
+    private javax.swing.JLabel jLabel30;
+    private javax.swing.JLabel jLabel31;
+    private javax.swing.JLabel jLabel32;
+    private javax.swing.JLabel jLabel39;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel42;
+    private javax.swing.JLabel jLabel43;
+    private javax.swing.JLabel jLabel44;
+    private javax.swing.JLabel jLabel45;
+    private javax.swing.JLabel jLabel46;
+    private javax.swing.JLabel jLabel47;
+    private javax.swing.JLabel jLabel48;
+    private javax.swing.JLabel jLabel49;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JScrollPane jScrollPane10;
+    private javax.swing.JScrollPane jScrollPane11;
+    private javax.swing.JScrollPane jScrollPane12;
+    private javax.swing.JScrollPane jScrollPane13;
+    private javax.swing.JScrollPane jScrollPane15;
+    private javax.swing.JScrollPane jScrollPane16;
+    private javax.swing.JScrollPane jScrollPane17;
+    private javax.swing.JScrollPane jScrollPane18;
+    private javax.swing.JScrollPane jScrollPane20;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jScrollPane7;
+    private javax.swing.JScrollPane jScrollPane9;
+    private javax.swing.JSlider jSlider2;
+    private javax.swing.JSlider jSlider4;
+    private javax.swing.JLabel winnerLabel;
     // End of variables declaration//GEN-END:variables
+
+    /**
+     * @return the mainFrameInstance
+     */
+    public static Principal getMainFrameInstance() {
+        return mainFrameInstance;
+    }
+
+    /**
+     * @param aMainFrameInstance the mainFrameInstance to set
+     */
+    public static void setMainFrameInstance(Principal aMainFrameInstance) {
+        mainFrameInstance = aMainFrameInstance;
+    }
+
+    /**
+     * @return the battleDurationSlider
+     */
+    public javax.swing.JSlider getBattleDurationSlider() {
+        return battleDurationSlider;
+    }
+
+    /**
+     * @param battleDurationSlider the battleDurationSlider to set
+     */
+    public void setBattleDurationSlider(javax.swing.JSlider battleDurationSlider) {
+        this.battleDurationSlider = battleDurationSlider;
+    }
+
 }

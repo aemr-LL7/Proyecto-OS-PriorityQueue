@@ -25,7 +25,7 @@ public class Administrator extends Thread {
 
     // Proveer peleador a AIProcessor para combate
     public Character provideFighter(String studioName) {
-        Studio studioContext = (studioName.equals("Star Wars")) ? firstStudio : secondStudio;
+        Studio studioContext = (studioName.equalsIgnoreCase("Star Wars")) ? firstStudio : secondStudio;
         return selectFighter(studioContext);
     }
 

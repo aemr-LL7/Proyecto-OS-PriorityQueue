@@ -6,12 +6,13 @@ package Classes;
 
 import EDD.OurQueue;
 import EDD.SimpleList;
+import Managers.ImagesManager;
 
 /**
  *
  * @author andre
  */
-public class Studio{
+public class Studio {
 
     //Studio info section
     private String studioLabel;
@@ -24,6 +25,9 @@ public class Studio{
     private OurQueue<Character> prior3_queue;
     private OurQueue<Character> reinforcement_queue;
 
+    // Images Manager
+    private ImagesManager imagesManager;
+
     public Studio(String studioLabel) {
         this.studioLabel = studioLabel;
         this.prior1_queue = new OurQueue();
@@ -32,12 +36,19 @@ public class Studio{
         this.reinforcement_queue = new OurQueue();
         this.chr_list = new SimpleList(); // Inicializa la lista de personajes
         this.idCounter = 0;
+        // Inicializamos el ImagesManager
+        this.imagesManager = new ImagesManager();
     }
 
     public Character createCharacter() {
         String characterId = this.getStudioLabel() + "-" + this.idCounter++; // Crea un ID unico para el personaje
-        Character newCharacter = new Character(characterId,"PLACEHOLDER", this.getStudioLabel());
+        Character newCharacter = new Character(characterId, this.getStudioLabel());
         this.getChr_list().addAtTheEnd(newCharacter); // Agrega el personaje a la lista de personajes disponibles
+        
+        // Asigna una imagen única del Star Wars o Star Trek y a su vez el nombre del personaje
+        imagesManager.assignUniqueImage(newCharacter,
+                this.getStudioLabel().equalsIgnoreCase("Star Wars") ? "./src/GUI/Assets/StarWars" : "./src/GUI/Assets/StarTrek",
+                true);
         return newCharacter;
     }
 
@@ -63,7 +74,7 @@ public class Studio{
                 character.resetStarvationCounter();
 
                 // Cambia la prioridad del personaje
-                if (character.getPrio_level() >0) { // Si no es de prioridad 1
+                if (character.getPrio_level() > 0) { // Si no es de prioridad 1
                     character.setPrio_level(character.getPrio_level() - 1); // Incrementa la prioridad, hace falta moverlo de cola
                 }
             }

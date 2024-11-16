@@ -5,6 +5,7 @@
 package Classes;
 
 import EDD.SimpleList;
+import GUI.Principal;
 import java.util.concurrent.Semaphore;
 
 /**
@@ -93,12 +94,21 @@ public class AIProcessor extends Thread {
                 Character fighter1 = getAdmin().provideFighter("Star Wars");
                 Character fighter2 = getAdmin().provideFighter("Star Trek");
 
+                if (fighter1 == null || fighter2 == null) {
+                    System.out.println("Error: No se pudo asignar un luchador válido para uno o ambos estudios.");
+                    return;
+                }
+
                 int willThereBe = isThereCombat(fighter1, fighter2);
 
                 if (willThereBe == 0) {
 
                     this.status = "Fight ongoing...";
-
+                    
+                    // Asignar imagenes al GUI
+                    Principal.getMainFrameInstance().updateStarWarsImageIcon(fighter1.getCharacterImage());
+                    Principal.getMainFrameInstance().updateStarTrekImageIcon(fighter2.getCharacterImage());
+                    
                     //contador de la vida de los personajes
                     int auxHp1 = fighter1.getHealth_pts();
                     int auxHp2 = fighter2.getHealth_pts();
@@ -120,18 +130,16 @@ public class AIProcessor extends Thread {
                     if (fighter1.getHealth_pts() > fighter2.getHealth_pts()) {
                         winner = fighter1;
                         winner.setHealth_pts(auxHp1);
-                        
+
                         loser = fighter2;
                     } else {
                         winner = fighter2;
                         winner.setHealth_pts(auxHp2);
-                        
+
                         loser = fighter1;
                     }
 
                     logWinner(winner);
-                    
-                    
 
                 } else if (willThereBe == 1) {
                     System.out.println("EMPATE: Ambos luchadores se encolan a la cola de NIVEL 1");

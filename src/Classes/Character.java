@@ -4,6 +4,8 @@
  */
 package Classes;
 
+import javax.swing.ImageIcon;
+
 /**
  *
  * @author andre
@@ -27,6 +29,8 @@ public class Character {
     private int starvation_counter; // Para incrementar prioridad en momentos de inanicion
     private String series; // "Star Wars" o "Star Trek"
 
+    private ImageIcon characterImage; // Atributo para la imagen
+
     //Las peleas se definen en 4 rondas, el que tenga mas puntos al final es el ganador, sin importar si mato o no al otro. Introducir mecanicas de criticos y de muerte.
     public Character(String id, String name, String series, int quality) {
         this.id = id;
@@ -41,7 +45,7 @@ public class Character {
         this.agilityModifier = this.generateAgilityModifier();
 
         this.prio_level = this.determinePriority(); //generamos la prio para los modificadores
-
+        
         //generamos modificadores
         this.attackModifier = this.generatAttackModifier();
         this.defenceModifier = this.generateDefenceModifier();
@@ -52,10 +56,10 @@ public class Character {
     }
 
     //Las peleas se definen en 4 rondas, el que tenga mas puntos al final es el ganador, sin importar si mato o no al otro. Introducir mecanicas de criticos y de muerte.
-    public Character(String id, String name, String series) {
+    public Character(String id, String series) {
         this.id = id;
         this.series = series;
-        this.name = name;
+        this.name = "";
         this.quality = -1;
 
         //generamos stats base
@@ -65,7 +69,7 @@ public class Character {
         this.agilityModifier = this.generateAgilityModifier();
 
         this.prio_level = this.determinePriority(); //generamos la prio para los modificadores
-
+        
         //generamos modificadores
         this.attackModifier = this.generatAttackModifier();
         this.defenceModifier = this.generateDefenceModifier();
@@ -73,6 +77,7 @@ public class Character {
         this.skills = this.generateSkills();
         this.prio_level = this.determinePriority();
         this.starvation_counter = 0;
+        this.characterImage = null;  // Imagen se asignará después
     }
 
     public void printCHRAttribs() {
@@ -282,7 +287,7 @@ public class Character {
 
     public void takeDamage(int damage) {
         this.health_pts -= damage;
-    }   
+    }
 
     public void resetStarvationCounter() {
         this.setStarvation_counter(0);
@@ -441,6 +446,20 @@ public class Character {
         }
 
         return 2;
+    }
+
+    /**
+     * @return the characterImage
+     */
+    public ImageIcon getCharacterImage() {
+        return characterImage;
+    }
+
+    /**
+     * @param characterImage the characterImage to set
+     */
+    public void setCharacterImage(ImageIcon characterImage) {
+        this.characterImage = characterImage;
     }
 
 }
