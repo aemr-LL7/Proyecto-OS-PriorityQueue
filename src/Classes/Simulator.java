@@ -34,69 +34,77 @@ public class Simulator extends Thread {
 
     @Override
     public void run() {
-        // Creación de los personajes iniciales usando getters y setters
-        System.out.println("Iniciando la creación de personajes...");
-        for (int i = 0; i < 20; i++) {
-            Character character1 = getFirstStudio().createCharacter();
-            Character character2 = getSecondStudio().createCharacter();
-            System.out.println("Personaje creado para " + getFirstStudio().getStudioLabel() + ": " + character1.getId());
-            System.out.println("Personaje creado para " + getSecondStudio().getStudioLabel() + ": " + character2.getId());
-        }
+        try {
+            //Tomar semaphore
+            this.getSemaphore().acquire();
+            // Creación de los personajes iniciales usando getters y setters
+            System.out.println("Iniciando la creación de personajes...");
+            for (int i = 0; i < 20; i++) {
+                Character character1 = getFirstStudio().createCharacter();
+                Character character2 = getSecondStudio().createCharacter();
+                System.out.println("Personaje creado para " + getFirstStudio().getStudioLabel() + ": " + character1.getId());
+                System.out.println("Personaje creado para " + getSecondStudio().getStudioLabel() + ": " + character2.getId());
+            }
 
-        // Iniciar el hilo de AIProcessor
-        getAI().start();
-        long startTime = System.currentTimeMillis();
-        long endTime = startTime + getDuration() * 1000; // Convertir duración a milisegundos
+            // Iniciar el hilo de AIProcessor
+            getAI().start();
 
-        // Ciclo de control de simulación
-        while (System.currentTimeMillis() < endTime) {
-            try {
-                // Espera antes de liberar el semáforo para un nuevo combate
-                Thread.sleep(100);
+            // Ciclo de control de simulación
+            while (!this.isDone()) {
 
-                // Liberar el semáforo para permitir un ciclo de combate en AIProcessor
-                getSemaphore().release();
+                if (this.getAI().getStatus().equals("Waiting")) {
+                    // Liberar el semáforo para permitir un ciclo de combate en AIProcessor
+                    getSemaphore().release();
+                } else if (this.getAI().getStatus().equals("Announcing")) {
 
-                this.cycleCheck++;
-                // Cada dos ciclos, se solicita al administrador que agregue nuevos personajes
-                if (this.cycleCheck % 2 == 0) {
-                    getAdmin().updateQueues(); // Método que maneja la creación de nuevos personajes en Administrator
+                    getSemaphore().acquire();
+
+                    this.cycleCheck++;
+                    
+                    getAdmin().updateQueues(cycleCheck);
+                    //logica de colas
+                    
+                    this.getAI().setStatus("Waiting");
+                    
+                    getSemaphore().release();
                 }
 
-            } catch (InterruptedException ex) {
-                System.out.println("Simulacion interrumpida: " + ex.getMessage());
-                Thread.currentThread().interrupt();
-                break;
             }
+
+            // Mostrar el estado final
+            System.out.println("Simulación finalizada: tiempo de batalla completado.");
+
+            // Mostrar los personajes restantes en cada estudio
+            System.out.println("\nEstado final de los personajes:");
+            System.out.println(getFirstStudio().getStudioLabel() + " tiene los siguientes personajes:");
+            for (int i = 0; i < getFirstStudio().getChr_list().getSize(); i++) {
+                System.out.println("- " + getFirstStudio().getChr_list().getValueByIndex(i).getId());
+            }
+
+            System.out.println(getSecondStudio().getStudioLabel() + " tiene los siguientes personajes:");
+            for (int i = 0; i < getSecondStudio().getChr_list().getSize(); i++) {
+                System.out.println("- " + getSecondStudio().getChr_list().getValueByIndex(i).getId());
+            }
+
+            // Mostrar las colas de prioridad y refuerzo
+            System.out.println("\nColas de prioridad:");
+            System.out.println("Cola de " + getFirstStudio().getStudioLabel() + ": " + getFirstStudio().getPrior0_queue());
+            System.out.println("Cola de " + getFirstStudio().getStudioLabel() + ": " + getFirstStudio().getPrior1_queue());
+            System.out.println("Cola de " + getFirstStudio().getStudioLabel() + ": " + getFirstStudio().getPrior2_queue());
+            System.out.println("Cola de " + getSecondStudio().getStudioLabel() + ": " + getSecondStudio().getPrior0_queue());
+            System.out.println("Cola de " + getSecondStudio().getStudioLabel() + ": " + getSecondStudio().getPrior1_queue());
+            System.out.println("Cola de " + getSecondStudio().getStudioLabel() + ": " + getSecondStudio().getPrior2_queue());
+
+            System.out.println("\nColas de refuerzo:");
+            System.out.println("Cola de refuerzo de " + getFirstStudio().getStudioLabel() + ": " + getFirstStudio().getReinforcement_queue());
+            System.out.println("Cola de refuerzo de " + getSecondStudio().getStudioLabel() + ": " + getSecondStudio().getReinforcement_queue());
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
 
-        // Mostrar el estado final
-        System.out.println("Simulación finalizada: tiempo de batalla completado.");
-
-        // Mostrar los personajes restantes en cada estudio
-        System.out.println("\nEstado final de los personajes:");
-        System.out.println(getFirstStudio().getStudioLabel() + " tiene los siguientes personajes:");
-        for (int i = 0; i < getFirstStudio().getChr_list().getSize(); i++) {
-            System.out.println("- " + getFirstStudio().getChr_list().getValueByIndex(i).getId());
-        }
-
-        System.out.println(getSecondStudio().getStudioLabel() + " tiene los siguientes personajes:");
-        for (int i = 0; i < getSecondStudio().getChr_list().getSize(); i++) {
-            System.out.println("- " + getSecondStudio().getChr_list().getValueByIndex(i).getId());
-        }
-
-        // Mostrar las colas de prioridad y refuerzo
-        System.out.println("\nColas de prioridad:");
-        System.out.println("Cola de " + getFirstStudio().getStudioLabel() + ": " + getFirstStudio().getPrior1_queue());
-        System.out.println("Cola de " + getFirstStudio().getStudioLabel() + ": " + getFirstStudio().getPrior2_queue());
-        System.out.println("Cola de " + getFirstStudio().getStudioLabel() + ": " + getFirstStudio().getPrior3_queue());
-        System.out.println("Cola de " + getSecondStudio().getStudioLabel() + ": " + getSecondStudio().getPrior1_queue());
-        System.out.println("Cola de " + getSecondStudio().getStudioLabel() + ": " + getSecondStudio().getPrior2_queue());
-        System.out.println("Cola de " + getSecondStudio().getStudioLabel() + ": " + getSecondStudio().getPrior3_queue());
-
-        System.out.println("\nColas de refuerzo:");
-        System.out.println("Cola de refuerzo de " + getFirstStudio().getStudioLabel() + ": " + getFirstStudio().getReinforcement_queue());
-        System.out.println("Cola de refuerzo de " + getSecondStudio().getStudioLabel() + ": " + getSecondStudio().getReinforcement_queue());
+    private boolean isDone() {
+        return true;//cambiar para que revise si alguno de los dos estudios se quedo sin cola
     }
 
     /**

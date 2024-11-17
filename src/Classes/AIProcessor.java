@@ -27,7 +27,7 @@ public class AIProcessor extends Thread {
         this.semaphore = semaphore;
         this.winnersQueue = new SimpleList<>();
         this.duration = duration;
-        this.status = "sleeping";
+        this.status = "Waiting";
         this.starTrekWins = 0;
         this.starWarsWins = 0;
     }
@@ -85,74 +85,76 @@ public class AIProcessor extends Thread {
     public void run() {
         try {
             while (true) {
-                this.status = "Deciding";
-                sleep(1000 * duration);
-                // Espera señal del semáforo antes de iniciar un combate
-                this.getSemaphore().acquire();
 
-                // Obtiene los peleadores desde el administrador
-                Character fighter1 = getAdmin().provideFighter("Star Wars");
-                Character fighter2 = getAdmin().provideFighter("Star Trek");
+                //Aprovechamos el sistema de status para que solo se ejecute un combate cuando este waiting.
+                if (this.status.equals("Waiting")) {
 
-                if (fighter1 == null || fighter2 == null) {
-                    System.out.println("Error: No se pudo asignar un luchador válido para uno o ambos estudios.");
-                    return;
-                }
+                    //tomamos el semaforo
+                    this.semaphore.acquire();
 
-                int willThereBe = isThereCombat(fighter1, fighter2);
+                    // Cambiamos el status a deciding y simulamos el tiempo transcurrido
+                    this.setStatus("Deciding");
+                    sleep(1000 * duration);
 
-                if (willThereBe == 0) {
+                    // Obtiene los peleadores desde el administrador
+                    Character fighter1 = getAdmin().provideFighter("Star Wars");
+                    Character fighter2 = getAdmin().provideFighter("Star Trek");
 
-                    this.status = "Fight ongoing...";
-                    
-                    // Asignar imagenes al GUI
-                    Principal.getMainFrameInstance().updateStarWarsImageIcon(fighter1.getCharacterImage());
-                    Principal.getMainFrameInstance().updateStarTrekImageIcon(fighter2.getCharacterImage());
-                    
-                    //contador de la vida de los personajes
-                    int auxHp1 = fighter1.getHealth_pts();
-                    int auxHp2 = fighter2.getHealth_pts();
-
-                    Character first = this.determineInitiativeWinner(fighter1, fighter2);
-                    Character second = (first == fighter1) ? fighter2 : fighter1;
-
-                    int roundCounter = 1;
-
-                    while (fighter1.getHealth_pts() > 0 && fighter2.getHealth_pts() > 0) {
-                        this.round(first, second, roundCounter);
-                        roundCounter++;
-                        sleep(1000);
+                    if (fighter1 == null || fighter2 == null) {
+                        System.out.println("Error: No se pudo asignar un luchador válido para uno o ambos estudios.");
+                        return;
                     }
 
-                    Character winner;
-                    Character loser;
+                    int willThereBe = isThereCombat(fighter1, fighter2);
 
-                    if (fighter1.getHealth_pts() > fighter2.getHealth_pts()) {
-                        winner = fighter1;
-                        winner.setHealth_pts(auxHp1);
+                    if (willThereBe == 0) {
 
-                        loser = fighter2;
-                    } else {
-                        winner = fighter2;
-                        winner.setHealth_pts(auxHp2);
+                        // Asignar imagenes al GUI
+                        Principal.getMainFrameInstance().updateStarWarsImageIcon(fighter1.getCharacterImage());
+                        Principal.getMainFrameInstance().updateStarTrekImageIcon(fighter2.getCharacterImage());
 
-                        loser = fighter1;
+                        //contador de la vida de los personajes
+                        int auxHp1 = fighter1.getHealth_pts();
+                        int auxHp2 = fighter2.getHealth_pts();
+
+                        Character first = this.determineInitiativeWinner(fighter1, fighter2);
+                        Character second = (first == fighter1) ? fighter2 : fighter1;
+
+                        int roundCounter = 1;
+
+                        while (fighter1.getHealth_pts() > 0 && fighter2.getHealth_pts() > 0) {
+                            this.round(first, second, roundCounter);
+                            roundCounter++;
+                            sleep(1000);
+                        }
+
+                        Character winner;
+                        Character loser;
+
+                        if (fighter1.getHealth_pts() > fighter2.getHealth_pts()) {
+                            winner = fighter1;
+                            winner.setHealth_pts(auxHp1);
+
+                            loser = fighter2;
+                        } else {
+                            winner = fighter2;
+                            winner.setHealth_pts(auxHp2);
+
+                            loser = fighter1;
+                        }
+
+                        logWinner(winner);
+
+                    } else if (willThereBe == 1) {
+                        System.out.println("EMPATE: Ambos luchadores se encolan a la cola de NIVEL 1");
+                    } else if (willThereBe == 2) {
+                        System.out.println("Sin Combate: Ambos luchadores han sido ingresados a la cola de refuerzo");
                     }
 
-                    logWinner(winner);
-
-                } else if (willThereBe == 1) {
-                    System.out.println("EMPATE: Ambos luchadores se encolan a la cola de NIVEL 1");
-                } else if (willThereBe == 2) {
-                    System.out.println("Sin Combate: Ambos luchadores han sido ingresados a la cola de refuerzo");
+                    //Cambiamos el estado a anunciando y devolvemos el semaforo para que lo agarre simulators
+                    this.setStatus("Announcing");
+                    this.getSemaphore().release();
                 }
-
-                this.status = "Announcing";
-                sleep(1000);
-
-                this.status = "Waiting";
-                sleep(1000);
-                this.getSemaphore().release();
             }
         } catch (InterruptedException e) {
             System.out.println("AIProcessor interrumpido: " + e.getMessage());
@@ -161,6 +163,9 @@ public class AIProcessor extends Thread {
     }
 
     private int isThereCombat(Character fighter1, Character fighter2) {
+        fighter1.setStarvation_counter(0);
+        fighter2.setStarvation_counter(0);
+        
         int outCome = (int) (Math.random() * 100);
 
         if (outCome < 40) {
@@ -218,6 +223,22 @@ public class AIProcessor extends Thread {
      */
     public void setSemaphore(Semaphore semaphore) {
         this.semaphore = semaphore;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 
 }

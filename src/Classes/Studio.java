@@ -20,9 +20,9 @@ public class Studio {
 
     //Queue section
     private SimpleList<Character> chr_list;
+    private OurQueue<Character> prior0_queue;
     private OurQueue<Character> prior1_queue;
     private OurQueue<Character> prior2_queue;
-    private OurQueue<Character> prior3_queue;
     private OurQueue<Character> reinforcement_queue;
 
     // Images Manager
@@ -30,9 +30,9 @@ public class Studio {
 
     public Studio(String studioLabel) {
         this.studioLabel = studioLabel;
+        this.prior0_queue = new OurQueue();
         this.prior1_queue = new OurQueue();
         this.prior2_queue = new OurQueue();
-        this.prior3_queue = new OurQueue();
         this.reinforcement_queue = new OurQueue();
         this.chr_list = new SimpleList(); // Inicializa la lista de personajes
         this.idCounter = 0;
@@ -44,7 +44,7 @@ public class Studio {
         String characterId = this.getStudioLabel() + "-" + this.idCounter++; // Crea un ID unico para el personaje
         Character newCharacter = new Character(characterId, this.getStudioLabel());
         this.getChr_list().addAtTheEnd(newCharacter); // Agrega el personaje a la lista de personajes disponibles
-        
+
         // Asigna una imagen única del Star Wars o Star Trek y a su vez el nombre del personaje
         imagesManager.assignUniqueImage(newCharacter,
                 this.getStudioLabel().equalsIgnoreCase("Star Wars") ? "./src/GUI/Assets/StarWars" : "./src/GUI/Assets/StarTrek",
@@ -69,15 +69,36 @@ public class Studio {
             character.incrementStarvationCounter(); // Incrementa el contador de inanicion
 
             // Verifica si el contador ha llegado a 8
-            if (character.getStarvation_counter() >= 8) {
+            if (character.getStarvation_counter() >= 8 && character.getPrio_level() != -1) {
                 // Reinicia el contador
                 character.resetStarvationCounter();
 
                 // Cambia la prioridad del personaje
                 if (character.getPrio_level() > 0) { // Si no es de prioridad 1
-                    character.setPrio_level(character.getPrio_level() - 1); // Incrementa la prioridad, hace falta moverlo de cola
+
+                    this.moveCharUpPrio(character); //Movemos el personaje
+
                 }
+                
             }
+        }
+    }
+
+    private void moveCharUpPrio(Character character) {
+        if (character.getPrio_level() > 0) { // Si no es de prioridad 1
+            int charPrio = character.getPrio_level();
+
+            if (charPrio == 1) {
+                this.getPrior0_queue().insert(character);//Mover a la siguiente cola
+                this.getPrior1_queue().remove(character);//Eliminar de la cola anterior
+
+            } else if (charPrio == 2) {
+                this.getPrior1_queue().insert(character);
+                this.getPrior2_queue().remove(character);//Eliminar de la cola anterior
+            }
+
+            character.setPrio_level(character.getPrio_level() - 1); // actualizamos el prio en el personaje
+
         }
     }
 
@@ -124,6 +145,20 @@ public class Studio {
     }
 
     /**
+     * @return the prior0_queue
+     */
+    public OurQueue getPrior0_queue() {
+        return prior0_queue;
+    }
+
+    /**
+     * @param prior1_queue the prior0_queue to set
+     */
+    public void setPrior0_queue(OurQueue prior1_queue) {
+        this.prior0_queue = prior1_queue;
+    }
+
+    /**
      * @return the prior1_queue
      */
     public OurQueue getPrior1_queue() {
@@ -131,10 +166,10 @@ public class Studio {
     }
 
     /**
-     * @param prior1_queue the prior1_queue to set
+     * @param prior2_queue the prior1_queue to set
      */
-    public void setPrior1_queue(OurQueue prior1_queue) {
-        this.prior1_queue = prior1_queue;
+    public void setPrior1_queue(OurQueue prior2_queue) {
+        this.prior1_queue = prior2_queue;
     }
 
     /**
@@ -145,30 +180,16 @@ public class Studio {
     }
 
     /**
-     * @param prior2_queue the prior2_queue to set
+     * @param prior3_queue the prior2_queue to set
      */
-    public void setPrior2_queue(OurQueue prior2_queue) {
-        this.prior2_queue = prior2_queue;
-    }
-
-    /**
-     * @return the prior3_queue
-     */
-    public OurQueue getPrior3_queue() {
-        return prior3_queue;
-    }
-
-    /**
-     * @param prior3_queue the prior3_queue to set
-     */
-    public void setPrior3_queue(OurQueue prior3_queue) {
-        this.prior3_queue = prior3_queue;
+    public void setPrior2_queue(OurQueue prior3_queue) {
+        this.prior2_queue = prior3_queue;
     }
 
     /**
      * @return the reinforcement_queue
      */
-    public OurQueue getReinforcement_queue() {
+    public OurQueue<Character> getReinforcement_queue() {
         return reinforcement_queue;
     }
 

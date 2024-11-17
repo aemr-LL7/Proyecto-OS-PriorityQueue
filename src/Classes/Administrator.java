@@ -5,14 +5,14 @@
 package Classes;
 
 import java.util.Random;
+import java.util.concurrent.Semaphore;
 
 /**
  *
  * @author andre
  */
-public class Administrator extends Thread {
+public class Administrator {
 
-    private int cycleForReviewCount;
     private Studio firstStudio; // Star Wars
     private Studio secondStudio; // Star Trek
     private static double NEW_CHAR_PROB = 0.8;
@@ -20,7 +20,6 @@ public class Administrator extends Thread {
     public Administrator(Studio studioStarWars, Studio studioStarTrek, int ciclickCheck) {
         this.firstStudio = studioStarWars;
         this.secondStudio = studioStarTrek;
-        this.cycleForReviewCount = ciclickCheck;
     }
 
     // Proveer peleador a AIProcessor para combate
@@ -31,16 +30,16 @@ public class Administrator extends Thread {
 
     // Seleccionador de personaje para la pelea por estudio
     public Character selectFighter(Studio studio) {
+        if (!studio.getPrior0_queue().isEmpty()) {
+            return (Character) studio.getPrior0_queue().pop();
+        }
+
         if (!studio.getPrior1_queue().isEmpty()) {
             return (Character) studio.getPrior1_queue().pop();
         }
 
         if (!studio.getPrior2_queue().isEmpty()) {
             return (Character) studio.getPrior2_queue().pop();
-        }
-
-        if (!studio.getPrior3_queue().isEmpty()) {
-            return (Character) studio.getPrior3_queue().pop();
         }
 
         return null;
@@ -53,14 +52,14 @@ public class Administrator extends Thread {
         int priorityLevel = character.getPrio_level();
 
         switch (priorityLevel) {
+            case 0:
+                studioContext.getPrior0_queue().remove(character);
+                break;
             case 1:
                 studioContext.getPrior1_queue().remove(character);
                 break;
             case 2:
                 studioContext.getPrior2_queue().remove(character);
-                break;
-            case 3:
-                studioContext.getPrior3_queue().remove(character);
                 break;
             default:
                 System.out.println("El personaje no tiene un nivel de prioridad valido!");
@@ -76,14 +75,14 @@ public class Administrator extends Thread {
         character.setPrio_level(priorityLevel);
 
         switch (priorityLevel) {
+            case 0:
+                studioContext.getPrior0_queue().insert(character);
+                break;
             case 1:
                 studioContext.getPrior1_queue().insert(character);
                 break;
             case 2:
                 studioContext.getPrior2_queue().insert(character);
-                break;
-            case 3:
-                studioContext.getPrior3_queue().insert(character);
                 break;
             default:
                 System.out.println("El nivel de prioridad especificado no es valido!");
@@ -96,21 +95,46 @@ public class Administrator extends Thread {
     public void reinforceFighter(Character character) {
         Studio studioContext = (character.getSeries().equals("Star Wars")) ? firstStudio : secondStudio;
         studioContext.getReinforcement_queue().insert(character);
+        character.setPrio_level(-1);
+        character.setStarvation_counter(0);
 
         System.out.println("Personaje " + character.getName() + " ID:" + character.getId() + " enviado a la Cola de Refuerzo.");
     }
 
-    public void updateQueues() {
-        // Incrementa el contador de revisión
-        this.setCycleForReviewCount(this.getCycleForReviewCount() + 1);
+    public void updateQueues(int cycleCounter) {
 
         // Cada ciclo revisa los personajes en inanición y gestiona los personajes nuevos
         this.handleStarvation(getFirstStudio());
         this.handleStarvation(getSecondStudio());
 
         // Cada dos ciclos de revisión
-        if (this.getCycleForReviewCount() % 2 == 0) {
-            this.addNewCharToQueues();
+        if (cycleCounter % 2 == 0) {
+            int isTimeForNewChar = (int) (Math.random() * 101);
+
+            if (isTimeForNewChar < 80) {
+                this.addNewCharToQueues();
+            }
+
+        }
+        
+        //refuerzo
+        reinforceQueueUpdate(getFirstStudio());
+        reinforceQueueUpdate(getSecondStudio());
+    }
+
+    private void reinforceQueueUpdate(Studio studio) {
+
+        if (!studio.getReinforcement_queue().isEmpty()) {
+            Character reinforcement = studio.getReinforcement_queue().pop();
+            
+            int willReinforce = (int) (Math.random() * 101);
+
+            if (willReinforce < 40) {
+                studio.getPrior0_queue().insert(reinforcement);
+                reinforcement.setPrio_level(0);
+            } else {
+                studio.getReinforcement_queue().insert(reinforcement);
+            }
         }
     }
 
@@ -135,40 +159,21 @@ public class Administrator extends Thread {
         int priorityLevel = character.getPrio_level();
 
         switch (priorityLevel) {
-            case 1: // Excepcional
-                studio.getPrior1_queue().insert(character);
+            case 0: // Excepcional
+                studio.getPrior0_queue().insert(character);
                 System.out.println("Personaje " + character.getId() + " insertado en la Cola de Prioridad 1 (Excepcional)");
                 break;
-            case 2: // Promedio
-                studio.getPrior2_queue().insert(character);
+            case 1: // Promedio
+                studio.getPrior1_queue().insert(character);
                 System.out.println("Personaje " + character.getId() + " insertado en la Cola de Prioridad 2 (Promedio)");
                 break;
-            case 3: // Deficiente
-                studio.getPrior3_queue().insert(character);
+            case 2: // Deficiente
+                studio.getPrior2_queue().insert(character);
                 System.out.println("Personaje " + character.getId() + " insertado en la Cola de Prioridad 3 (Deficiente)");
                 break;
             default:
                 System.out.println("No se ha encontrado correctamente la prioridad del Personaje " + character.getId());
         }
-    }
-    
-    @Override
-    public void run(){
-        ;
-    }
-
-    /**
-     * @return the cycleForReviewCount
-     */
-    public int getCycleForReviewCount() {
-        return cycleForReviewCount;
-    }
-
-    /**
-     * @param cycleForReviewCount the cycleForReviewCount to set
-     */
-    public void setCycleForReviewCount(int cycleForReviewCount) {
-        this.cycleForReviewCount = cycleForReviewCount;
     }
 
     /**
