@@ -6,8 +6,7 @@ package EDD;
 
 /**
  *
- * @author andre
- * @param <T>
+ * @author B-St
  */
 public class SimpleList<T> {
 
@@ -22,7 +21,7 @@ public class SimpleList<T> {
     }
 
     public boolean isEmpty() {
-        return this.getpFirst() == null;
+        return this.pFirst == null;
     }
 
     //Anadir al inicio
@@ -31,14 +30,14 @@ public class SimpleList<T> {
         SimpleNode<T> node = new SimpleNode<>(data);
 
         if (this.isEmpty()) {
-            this.setpFirst(node);
-            this.setpLast(node);
+            this.pFirst = node;
+            this.pLast = node;
         } else {
-            node.setpNext(this.getpFirst());
-            this.setpFirst(node);
+            node.setpNext(this.pFirst);
+            this.pFirst = node;
         }
 
-        this.setSize(this.getSize() + 1);
+        this.size++;
 
     }
 
@@ -47,13 +46,13 @@ public class SimpleList<T> {
 
         SimpleNode<T> node = new SimpleNode<>(data);
         if (this.isEmpty()) {
-            this.setpFirst(node);
-            this.setpLast(node);
+            this.pFirst = node;
+            this.pLast = node;
         } else {
-            this.getpLast().setpNext(node);
-            this.setpLast(node);
+            this.pLast.setpNext(node);
+            this.pLast = node;
         }
-        this.setSize(this.getSize() + 1);
+        this.size++;
     }
 
     //recorrer hasta nulo
@@ -62,7 +61,7 @@ public class SimpleList<T> {
             System.out.println("La lista esta vacia");
         } else {
             try {
-                SimpleNode<T> pAux = this.getpFirst();
+                SimpleNode<T> pAux = this.pFirst;
                 System.out.println("Lista==============================");
                 while (pAux != null) {
                     System.out.println(pAux.getData());
@@ -80,7 +79,7 @@ public class SimpleList<T> {
         if (this.isEmpty()) {
             return "//";
         }
-        SimpleNode<T> pAux = this.getpFirst();
+        SimpleNode<T> pAux = this.pFirst;
         //int contador = 0;
         String chain = "";
         while (pAux != null) {
@@ -93,7 +92,7 @@ public class SimpleList<T> {
     }
 
     public T getValueByIndex(int index) {
-        SimpleNode<T> pAux = this.getpFirst();
+        SimpleNode<T> pAux = this.pFirst;
         int count = 0;
 
         while (pAux != null && count != index) {
@@ -109,24 +108,12 @@ public class SimpleList<T> {
 
     }
 
-    public boolean contains(String value) {
-        SimpleNode<T> pAux = this.getpFirst();
+
+    public boolean contains(T data) {
+        SimpleNode<T> pAux = this.pFirst;
 
         while (pAux != null) {
-            if (pAux.getData().equals(value)) {
-                return true;
-            }
-            pAux = pAux.getpNext();
-        }
-
-        return false;
-    }
-
-    public boolean contains(int value) {
-        SimpleNode<T> pAux = this.getpFirst();
-
-        while (pAux != null) {
-            if (pAux.getData().equals(value)) {
+            if (pAux.getData().equals(data)) {
                 return true;
             }
             pAux = pAux.getpNext();
@@ -136,7 +123,7 @@ public class SimpleList<T> {
     }
 
     public SimpleNode<T> searchByValue(T value) {
-        SimpleNode<T> pAux = this.getpFirst();
+        SimpleNode<T> pAux = this.pFirst;
 
         while (pAux != null && pAux.getData() != value) {
             pAux = pAux.getpNext();
@@ -154,7 +141,7 @@ public class SimpleList<T> {
         Metodo para retornar la posicion de un elemento en la lista
      */
     public int indexOf(T valorBuscado) {
-        SimpleNode<T> actual = this.getpFirst();
+        SimpleNode<T> actual = this.pFirst;
         int index = 0;
 
         while (actual != null) {
@@ -173,27 +160,27 @@ public class SimpleList<T> {
         if (this.isEmpty()) {
             System.out.println("Lista vacia.");
         } else {
-            setpFirst((SimpleNode<T>) getpFirst().getpNext());
+            pFirst = pFirst.getpNext();
         }
     }
 
     public void deleteLast() {
 
-        if (this.getpFirst() == this.getpLast()) {
-            this.setpFirst(null);
-            this.setpLast(null);
-            this.setSize(0);
+        if (this.pFirst == this.pLast) {
+            this.pFirst = null;
+            this.pLast = null;
+            this.size = 0;
 
         } else {
 
-            SimpleNode<T> pAux = this.getpFirst();
+            SimpleNode<T> pAux = this.pFirst;
 
             while (pAux.getpNext().getpNext() != null) {
                 pAux = pAux.getpNext();
             }
 
             pAux.setpNext(null);
-            this.setpLast(pAux);
+            this.pLast = pAux;
         }
     }
 
@@ -207,7 +194,7 @@ public class SimpleList<T> {
             System.out.println("No existe el indice");
         } else {
 
-            SimpleNode<T> pAux = this.getpFirst();
+            SimpleNode<T> pAux = this.pFirst;
             int counter = 0;
 
             while (counter != index) {
@@ -226,12 +213,12 @@ public class SimpleList<T> {
     public void deleteByIndex(int index) {
         if (!this.isEmpty()) {
             if (index == 0) {
-                SimpleNode<T> head = this.getpFirst();
-                this.setpFirst((SimpleNode<T>) this.getpFirst().getpNext());
+                SimpleNode<T> head = this.pFirst;
+                this.pFirst = this.pFirst.getpNext();
                 head.setpNext(null);
-                this.setSize(this.getSize() - 1);
+                this.size--;
             } else if (index < this.getSize()) {
-                SimpleNode<T> pAux = this.getpFirst();
+                SimpleNode<T> pAux = this.pFirst;
                 int count = 0;
                 while (count < (index - 1)) {
                     pAux = pAux.getpNext();
@@ -240,14 +227,14 @@ public class SimpleList<T> {
                 SimpleNode<T> temporal = pAux.getpNext();
                 pAux.setpNext(temporal.getpNext());
                 temporal.setpNext(null);
-                this.setSize(this.getSize() - 1);
+                this.size--;
             }
         }
     }
 
     // ordena la lista 
     public void sort() {
-        SimpleNode<Integer> pAux = (SimpleNode<Integer>) this.getpFirst();
+        SimpleNode<Integer> pAux = (SimpleNode<Integer>) this.pFirst;
 
         if (pAux == null || pAux.getpNext() == null) {
             return;
@@ -277,15 +264,15 @@ public class SimpleList<T> {
     }
 
     public void wipeList() {
-        this.setpFirst(null);
-        this.setSize(0);
+        this.pFirst = null;
+        this.size = 0;
     }
 
     public Object[] toArray() {
-        Object[] array = new Object[this.getSize()];
-        SimpleNode<T> pAux = this.getpFirst();
+        Object[] array = new Object[this.size];
+        SimpleNode<T> pAux = this.pFirst;
 
-        for (int i = 0; i < this.getSize(); i++) {
+        for (int i = 0; i < this.size; i++) {
             array[i] = pAux.getData();
             pAux = pAux.getpNext();
         }
@@ -295,7 +282,7 @@ public class SimpleList<T> {
 
     public void delete(T data) {
 
-        SimpleNode<T> currentNode = this.getpFirst();
+        SimpleNode<T> currentNode = this.pFirst;
         SimpleNode<T> previousNode = null;
 
         while (currentNode != null && !currentNode.getData().equals(data)) {
@@ -305,56 +292,39 @@ public class SimpleList<T> {
 
         if (currentNode != null) {
             if (previousNode == null) {
-                this.setpFirst(this.pFirst.getpNext());
+                this.pFirst = currentNode.getpNext();
             } else {
                 previousNode.setpNext(currentNode.getpNext());
             }
-            this.setSize(this.getSize() - 1);
+            this.size--;
         }
     }
 
-    /**
-     * @return the pFirst
+    /*
+        Getters y Setter
      */
     public SimpleNode<T> getpFirst() {
         return pFirst;
     }
 
-    /**
-     * @param pFirst the pFirst to set
-     */
     public void setpFirst(SimpleNode<T> pFirst) {
         this.pFirst = pFirst;
     }
 
-    /**
-     * @return the pLast
-     */
     public SimpleNode<T> getpLast() {
         return pLast;
     }
 
-    /**
-     * @param pLast the pLast to set
-     */
     public void setpLast(SimpleNode<T> pLast) {
         this.pLast = pLast;
     }
 
-    /**
-     * @return the size
-     */
     public int getSize() {
         return size;
     }
 
-    /**
-     * @param size the size to set
-     */
     public void setSize(int size) {
         this.size = size;
     }
-
-    
 
 }

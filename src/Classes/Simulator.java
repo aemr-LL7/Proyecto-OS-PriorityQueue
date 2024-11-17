@@ -4,6 +4,7 @@
  */
 package Classes;
 
+import EDD.SimpleList;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,6 +22,7 @@ public class Simulator extends Thread {
     private int duration;
     private int cycleCheck;
     private Semaphore semaphore;
+    private SimpleList<Character> winners_list; //la lista de ganadores puede tener repetidos, para propositos del conteo de las victorias
 
     public Simulator(String labelStudio1, String labelStudio2, int battleDuration) {
         this.firstStudio = new Studio(labelStudio1);
@@ -29,7 +31,7 @@ public class Simulator extends Thread {
         this.admin = new Administrator(getFirstStudio(), getSecondStudio(), this.getCycleCheck());
         this.AI = new AIProcessor(getAdmin(), getSemaphore(), this.duration);
         this.duration = battleDuration;
-
+        this.winners_list = new SimpleList<>();
     }
 
     @Override
@@ -60,12 +62,24 @@ public class Simulator extends Thread {
                     getSemaphore().acquire();
 
                     this.cycleCheck++;
-                    
-                    getAdmin().updateQueues(cycleCheck);
+
                     //logica de colas
-                    
+                    getAdmin().updateQueues(cycleCheck);
+
+                    Character winner = this.getAI().getLastWinner();
+                    if (winner != null) {
+                        Studio winnerStudio = (winner.getSeries().equals("Star Wars")) ? firstStudio : secondStudio;
+                        winner.setPrio_level(2);
+                        winnerStudio.getPrior2_queue().insert(winner);//devolver al personaje a la cola de prio 2
+                        if(!this.getWinners_list().contains(winner)){
+                            this.getWinners_list().addStart(winner);//Anadirlo en la lista de ganadores si no esta ya
+                        }
+                        
+
+                    }
+
+                    //Actualizamos el estado de la inteligencia y devolvemos el semaforo
                     this.getAI().setStatus("Waiting");
-                    
                     getSemaphore().release();
                 }
 
@@ -104,7 +118,7 @@ public class Simulator extends Thread {
     }
 
     private boolean isDone() {
-        return true;//cambiar para que revise si alguno de los dos estudios se quedo sin cola
+        return false;//cambiar para que revise si alguno de los dos estudios se quedo sin cola
     }
 
     /**
@@ -203,6 +217,10 @@ public class Simulator extends Thread {
      */
     public void setSemaphore(Semaphore semaphore) {
         this.semaphore = semaphore;
+    }
+
+    public SimpleList<Character> getWinners_list() {
+        return winners_list;
     }
 
 }

@@ -15,21 +15,22 @@ import java.util.concurrent.Semaphore;
 public class AIProcessor extends Thread {
 
     private Administrator admin;
-    private SimpleList<Character> winnersQueue;
     private int starTrekWins;
     private int starWarsWins;
     private Semaphore semaphore;
     private String status;
     private int duration; //int multiplicado por 1000 para simular segundos
+    private Character lastWinner;
+    private int lastCombatRounds;
 
     public AIProcessor(Administrator admin, Semaphore semaphore, int duration) {
         this.admin = admin;
         this.semaphore = semaphore;
-        this.winnersQueue = new SimpleList<>();
         this.duration = duration;
         this.status = "Waiting";
         this.starTrekWins = 0;
         this.starWarsWins = 0;
+        this.lastWinner = null;
     }
 
     private Character determineInitiativeWinner(Character fighter1, Character fighter2) {//check contest de iniciativa para una ronda.
@@ -72,14 +73,16 @@ public class AIProcessor extends Thread {
     }
 
     private void logWinner(Character winner) {
-        this.getWinnersQueue().addStart(winner);
-        winner.setPrio_level(2);
 
         if (winner.getSeries().equals("Star Wars")) {
             this.starWarsWins++;
         } else {
             this.starTrekWins++;
         }
+
+        this.setLastWinner(winner);
+        winner.addWin();
+
     }
 
     @Override
@@ -95,7 +98,7 @@ public class AIProcessor extends Thread {
 
                     // Cambiamos el status a deciding y simulamos el tiempo transcurrido
                     this.setStatus("Deciding");
-                    sleep(1000 * duration);
+                    sleep(1000 * duration/2);
 
                     // Obtiene los peleadores desde el administrador
                     Character fighter1 = getAdmin().provideFighter("Star Wars");
@@ -126,8 +129,9 @@ public class AIProcessor extends Thread {
                         while (fighter1.getHealth_pts() > 0 && fighter2.getHealth_pts() > 0) {
                             this.round(first, second, roundCounter);
                             roundCounter++;
-                            sleep(1000);
                         }
+
+                        this.setLastCombatRounds(roundCounter);
 
                         Character winner;
                         Character loser;
@@ -148,12 +152,15 @@ public class AIProcessor extends Thread {
 
                     } else if (willThereBe == 1) {
                         System.out.println("EMPATE: Ambos luchadores se encolan a la cola de NIVEL 1");
+                        this.setLastWinner(null);
                     } else if (willThereBe == 2) {
                         System.out.println("Sin Combate: Ambos luchadores han sido ingresados a la cola de refuerzo");
+                        this.setLastWinner(null);
                     }
 
                     //Cambiamos el estado a anunciando y devolvemos el semaforo para que lo agarre simulators
                     this.setStatus("Announcing");
+                    sleep(1000 * duration/2);
                     this.getSemaphore().release();
                 }
             }
@@ -166,7 +173,7 @@ public class AIProcessor extends Thread {
     private int isThereCombat(Character fighter1, Character fighter2) {
         fighter1.setStarvation_counter(0);
         fighter2.setStarvation_counter(0);
-        
+
         int outCome = (int) (Math.random() * 100);
 
         if (outCome < 40) {
@@ -201,17 +208,6 @@ public class AIProcessor extends Thread {
     /**
      * @return the winnersQueue
      */
-    public SimpleList<Character> getWinnersQueue() {
-        return winnersQueue;
-    }
-
-    /**
-     * @param winnersQueue the winnersQueue to set
-     */
-    public void setWinnersQueue(SimpleList<Character> winnersQueue) {
-        this.winnersQueue = winnersQueue;
-    }
-
     /**
      * @return the semaphore
      */
@@ -240,6 +236,26 @@ public class AIProcessor extends Thread {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public Character getLastWinner() {
+        return lastWinner;
+    }
+
+    public void setLastWinner(Character lastWinner) {
+        this.lastWinner = lastWinner;
+    }
+
+    public int getStarWarsWins() {
+        return starWarsWins;
+    }
+
+    public int getLastCombatRounds() {
+        return lastCombatRounds;
+    }
+
+    public void setLastCombatRounds(int lastCombatRounds) {
+        this.lastCombatRounds = lastCombatRounds;
     }
 
 }
