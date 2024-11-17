@@ -69,7 +69,7 @@ public class Studio {
             character.incrementStarvationCounter(); // Incrementa el contador de inanicion
 
             // Verifica si el contador ha llegado a 8
-            if (character.getStarvation_counter() >= 8 && character.getPrio_level() != -1) {
+            if (character.getStarvation_counter() >= 8 && !character.isIsReinforced()) {
                 // Reinicia el contador
                 character.resetStarvationCounter();
 
@@ -79,7 +79,28 @@ public class Studio {
                     this.moveCharUpPrio(character); //Movemos el personaje
 
                 }
-                
+
+            } else if (character.getStarvation_counter() >= 8 && character.isIsReinforced()) {
+
+                // Reinicia el contador
+                character.resetStarvationCounter();
+
+                //Eliminar flag de refuerzo
+                character.setIsReinforced(false);
+
+                if (character.getPrio_level() == 0) {
+                    this.getPrior0_queue().insert(character);//Mover una cola arriba por mecanica de starvation normal
+
+                } else if (character.getPrio_level() == 1) {
+                    this.getPrior0_queue().insert(character);
+
+                } else if (character.getPrio_level() == 2) {
+                    this.getPrior1_queue().insert(character);
+
+                }
+
+                this.getReinforcement_queue().remove(character);//Eliminar de la cola de refuerzo
+
             }
         }
     }

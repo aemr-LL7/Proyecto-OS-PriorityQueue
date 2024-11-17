@@ -30,6 +30,7 @@ public class Character {
     private String series; // "Star Wars" o "Star Trek"
 
     private ImageIcon characterImage; // Atributo para la imagen
+    private boolean isReinforced;
 
     //Las peleas se definen en 4 rondas, el que tenga mas puntos al final es el ganador, sin importar si mato o no al otro. Introducir mecanicas de criticos y de muerte.
     public Character(String id, String name, String series, int quality) {
@@ -37,6 +38,7 @@ public class Character {
         this.series = series;
         this.name = name;
         this.quality = quality;
+        this.isReinforced = false;
 
         //generamos stats base
         this.health_pts = this.generateHealthPoints();
@@ -461,5 +463,15 @@ public class Character {
     public void setCharacterImage(ImageIcon characterImage) {
         this.characterImage = characterImage;
     }
+
+    public boolean isIsReinforced() {
+        return isReinforced;
+    }
+
+    public void setIsReinforced(boolean isReinforced) {
+        this.isReinforced = isReinforced;
+    }
+    
+    
 
 }

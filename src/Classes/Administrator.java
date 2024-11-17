@@ -95,8 +95,8 @@ public class Administrator {
     public void reinforceFighter(Character character) {
         Studio studioContext = (character.getSeries().equals("Star Wars")) ? firstStudio : secondStudio;
         studioContext.getReinforcement_queue().insert(character);
-        character.setPrio_level(-1);
-        character.setStarvation_counter(0);
+        character.resetStarvationCounter();
+        character.setIsReinforced(true);
 
         System.out.println("Personaje " + character.getName() + " ID:" + character.getId() + " enviado a la Cola de Refuerzo.");
     }

@@ -73,6 +73,7 @@ public class AIProcessor extends Thread {
 
     private void logWinner(Character winner) {
         this.getWinnersQueue().addStart(winner);
+        winner.setPrio_level(2);
 
         if (winner.getSeries().equals("Star Wars")) {
             this.starWarsWins++;
