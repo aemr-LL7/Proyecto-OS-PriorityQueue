@@ -180,8 +180,11 @@ public class AIProcessor extends Thread {
             return 0;
 
         } else if (outCome < 67) { // 27% de empate
-            getAdmin().enqueueFighter(fighter1, 0);
-            getAdmin().enqueueFighter(fighter2, 0);
+
+            
+
+//            getAdmin().ReEnqueueFighter(fighter1, 0);
+//            getAdmin().ReEnqueueFighter(fighter2, 0);
             return 1;
 
         } else {

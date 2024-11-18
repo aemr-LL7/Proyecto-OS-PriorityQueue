@@ -39,6 +39,7 @@ public class Simulator extends Thread {
         try {
             //Tomar semaphore
             this.getSemaphore().acquire();
+            
             // Creación de los personajes iniciales usando getters y setters
             System.out.println("Iniciando la creación de personajes...");
             for (int i = 0; i < 20; i++) {
@@ -57,7 +58,8 @@ public class Simulator extends Thread {
                 if (this.getAI().getStatus().equals("Waiting")) {
                     // Liberar el semáforo para permitir un ciclo de combate en AIProcessor
                     getSemaphore().release();
-                } else if (this.getAI().getStatus().equals("Announcing")) {
+                }
+                if (this.getAI().getStatus().equals("Announcing")) {
 
                     getSemaphore().acquire();
 

@@ -69,7 +69,7 @@ public class Administrator {
     }
 
     // Reencolar un character en la cola de prioridad especificada
-    public void enqueueFighter(Character character, int priorityLevel) {
+    public void ReEnqueueFighter(Character character, int priorityLevel) {
         Studio studioContext = (character.getSeries().equals("Star Wars")) ? firstStudio : secondStudio;
 
         character.setPrio_level(priorityLevel);

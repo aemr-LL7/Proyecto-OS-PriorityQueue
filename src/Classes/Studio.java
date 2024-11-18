@@ -49,7 +49,20 @@ public class Studio {
         imagesManager.assignUniqueImage(newCharacter,
                 this.getStudioLabel().equalsIgnoreCase("Star Wars") ? "./src/GUI/Assets/StarWars" : "./src/GUI/Assets/StarTrek",
                 true);
+        
+        int charPrio = newCharacter.getPrio_level();
+        
+        
+        if (charPrio == 0){
+            this.getPrior0_queue().insert(newCharacter);
+        } else if (charPrio == 1){
+            this.getPrior1_queue().insert(newCharacter);
+        } else if (charPrio == 2){
+            this.getPrior2_queue().insert(newCharacter);
+        }
+        
         return newCharacter;
+        
     }
 
     //Implementar borrar personaje en algun momento de la lista, el personaje esta fuera de la simulacion al estar fuera de las colas.
