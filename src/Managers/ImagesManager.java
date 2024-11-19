@@ -4,41 +4,36 @@
  */
 package Managers;
 
-import EDD.SimpleList;
 import java.util.Random;
 import javax.swing.ImageIcon;
 import Classes.Character;
+import EDD.OurQueue;
+import EDD.SimpleList;
+import EDD.SimpleNode;
+import java.awt.Image;
 import java.io.File;
 
-/**
- *
- * @author HP-Probook
- */
 public class ImagesManager {
 
-    private SimpleList<ImageIcon> usedStarWarsImages;
-    private SimpleList<ImageIcon> usedStarTrekImages;
-    private SimpleList<String> usedStarWarsNames;
-    private SimpleList<String> usedStarTrekNames;
     private Random random;
 
     public ImagesManager() {
-        this.usedStarWarsImages = new SimpleList<>();
-        this.usedStarTrekImages = new SimpleList<>();
-        this.usedStarWarsNames = new SimpleList<>();
-        this.usedStarTrekNames = new SimpleList<>();
         this.random = new Random();
     }
 
-    // Método para asignar una imagen única a un personaje
-    public void assignUniqueImage(Character character, String folderPath, boolean isStarWars) {
-        ImageIcon selectedImage = getUniqueImage(folderPath, isStarWars);
-        character.setCharacterImage(selectedImage);
-        character.setName(getImageName(selectedImage, isStarWars));
+    // Método para asignar una imagen a un personaje según el estudio (permitiendo repeticiones)
+    public void assignImage(Character character, String folderPath) {
+        ImageIcon selectedImage = getRandomImage(folderPath);
+        if (selectedImage != null) {
+            character.setCharacterImage(selectedImage);
+            character.setName(getImageName(selectedImage));
+        } else {
+            System.err.println("No se pudo asignar una imagen al personaje.");
+        }
     }
 
-    // Método para cargar imágenes únicas según la carpeta proporcionada
-    private ImageIcon getUniqueImage(String folderPath, boolean isStarWars) {
+    // Método para cargar imágenes aleatoriamente según la carpeta proporcionada y el estudio
+    private ImageIcon getRandomImage(String folderPath) {
         File folder = new File(folderPath);
         File[] files = folder.listFiles();
 
@@ -47,50 +42,38 @@ public class ImagesManager {
             return null;
         }
 
-        ImageIcon selectedImage;
-        String selectedFileName;
-        boolean isUnique;
-
-        do {
-            int index = random.nextInt(files.length);
-            selectedFileName = files[index].getName();
-            selectedImage = new ImageIcon(files[index].getPath());
-            isUnique = isImageUnique(selectedFileName, isStarWars);
-        } while (!isUnique);
-
-        if (isStarWars) {
-            this.usedStarWarsImages.addAtTheEnd(selectedImage);
-            this.usedStarWarsNames.addAtTheEnd(selectedFileName);
-        } else {
-            this.usedStarTrekImages.addAtTheEnd(selectedImage);
-            this.usedStarTrekNames.addAtTheEnd(selectedFileName);
-        }
-
-        return selectedImage;
-    }
-
-    // Verifica si la imagen es única según el nombre del archivo
-    private boolean isImageUnique(String fileName, boolean isStarWars) {
-        if (isStarWars) {
-            return !this.usedStarWarsNames.contains(fileName);
-        } else {
-            return !this.usedStarTrekNames.contains(fileName);
-        }
+        // Selecciona una imagen aleatoria basada en el estudio
+        int index = random.nextInt(files.length);
+        return new ImageIcon(files[index].getPath());
     }
 
     // Método para obtener el nombre del archivo de la imagen utilizada sin extensión
-    private String getImageName(ImageIcon image, boolean isStarWars) {
-        SimpleList<String> nameList = isStarWars ? this.usedStarWarsNames : this.usedStarTrekNames;
-        SimpleList<ImageIcon> imageList = isStarWars ? this.usedStarWarsImages : this.usedStarTrekImages;
-
-        int index = imageList.indexOf(image);
-        if (index != -1) {
-            String fileName = nameList.getValueByIndex(index);
-            // Remueve la extensión del archivo
-            return fileName.contains(".") ? fileName.substring(0, fileName.lastIndexOf('.')) : fileName;
-        }
-
-        return null;
+    private String getImageName(ImageIcon image) {
+        String filePath = image.getDescription();
+        String fileName = new File(filePath).getName();
+        return fileName.contains(".") ? fileName.substring(0, fileName.lastIndexOf('.')) : fileName;
     }
 
+    public SimpleList<ImageIcon> getImagesFromQueue(OurQueue<Character> queue) {
+        SimpleList<ImageIcon> imageList = new SimpleList<>();
+        SimpleNode<Character> currentNode = queue.getpFirst();
+
+        while (currentNode != null) {
+            Character character = currentNode.getData();
+            ImageIcon originalImage = character.getCharacterImage();
+
+            if (originalImage != null) {
+                // Redimensionar la imagen
+                Image resizedImage = originalImage.getImage().getScaledInstance(30, 45, Image.SCALE_SMOOTH);
+                ImageIcon resizedIcon = new ImageIcon(resizedImage);
+                imageList.addAtTheEnd(resizedIcon); // Añadimos la imagen a la lista
+            } else {
+                System.err.println("El Character no tiene una imagen válida.");
+            }
+
+            currentNode = currentNode.getpNext();
+        }
+
+        return imageList;
+    }
 }

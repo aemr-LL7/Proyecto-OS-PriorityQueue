@@ -4,18 +4,26 @@
  */
 package Main;
 
+import Classes.AIProcessor;
+import Classes.Administrator;
 import Classes.Simulator;
 import GUI.Principal;
+import java.util.concurrent.Semaphore;
 
 /**
  *
  * @author HP-Probook
  */
 public class App {
-    
-    private static int battleDuration = 10;
+
     private static App app;
-    private Simulator simulation = new Simulator("LucasArt", "Pinewood", battleDuration);
+
+    private static Semaphore semaphore = new Semaphore(1);
+    private static int battleDuration = 10;
+    private static Simulator simulation;
+    private static Administrator admin;
+    private static AIProcessor ia;
+
 
     // Retorna instancia unica de la app
     public static synchronized App getInstance() {
@@ -25,53 +33,58 @@ public class App {
         return getApp();
     }
 
-    public void start() {
-        getSimulation().start();
-        // Inicia la simulación y pasa el control a la ventana Principal
-        Principal mainFrame = Principal.getPrincipalInstance();
-        mainFrame.setVisible(true);  // Muestra la ventana Principal
+    public void startProgram() {
+        // COMENZAR LA SIMULACION DEL PROGRAMA
+        InitValues.initializeParams();
+    }
+    
+    
+    public static Administrator getAdmin() {
+        return admin;
     }
 
-    /**
-     * @return the app
-     */
+    public static void setAdmin(Administrator admin) {
+        App.admin = admin;
+    }
+
     public static App getApp() {
         return app;
     }
 
-    /**
-     * @param aApp the app to set
-     */
-    public static void setApp(App aApp) {
-        app = aApp;
+    public static void setApp(App app) {
+        App.app = app;
     }
 
-    /**
-     * @return the battleDuration
-     */
+    public static Semaphore getSemaphore() {
+        return semaphore;
+    }
+
+    public static void setSemaphore(Semaphore semaphore) {
+        App.semaphore = semaphore;
+    }
+
     public static int getBattleDuration() {
         return battleDuration;
     }
 
-    /**
-     * @param aBattleDuration the battleDuration to set
-     */
-    public static void setBattleDuration(int aBattleDuration) {
-        battleDuration = aBattleDuration;
+    public static void setBattleDuration(int battleDuration) {
+        App.battleDuration = battleDuration;
     }
 
-    /**
-     * @return the simulation
-     */
-    public Simulator getSimulation() {
+    public static Simulator getSimulation() {
         return simulation;
     }
 
-    /**
-     * @param simulation the simulation to set
-     */
-    public void setSimulation(Simulator simulation) {
-        this.simulation = simulation;
+    public static void setSimulation(Simulator simulation) {
+        App.simulation = simulation;
     }
-    
+
+    public static AIProcessor getIa() {
+        return ia;
+    }
+
+    public static void setIa(AIProcessor ia) {
+        App.ia = ia;
+    }
+
 }

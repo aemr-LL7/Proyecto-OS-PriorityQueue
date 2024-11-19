@@ -74,6 +74,27 @@ public class OurQueue<T> {
         }
         return false; // No se encontró el elemento
     }
+    
+    // STILL A WIP
+
+    public SimpleList<T> getListSortedFromQueue(OurQueue<T> queue) {
+        SimpleList<T> dataList = new SimpleList<>();
+
+        if (queue == null || queue.isEmpty()) {
+            System.out.println("La cola esta vacia o no se pudo acceder a ella.");
+            return dataList;
+        }
+
+        // Recorremos la cola desde el primer nodo
+        SimpleNode<T> currentNode = queue.getpFirst();
+
+        while (currentNode != null) {
+            dataList.addAtTheEnd(currentNode.getData());
+            currentNode = currentNode.getpNext();
+        }
+
+        return dataList;
+    }
 
     public SimpleNode<T> getpFirst() {
         return pFirst;

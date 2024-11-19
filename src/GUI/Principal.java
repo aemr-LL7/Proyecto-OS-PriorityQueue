@@ -4,9 +4,18 @@
  */
 package GUI;
 
+import Classes.Studio;
+import EDD.OurQueue;
+import EDD.SimpleList;
 import javax.swing.JFrame;
 import javax.swing.ImageIcon;
 import Main.App;
+import Managers.ImagesManager;
+import javax.swing.JScrollPane;
+import Classes.Character;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /**
  *
@@ -15,6 +24,7 @@ import Main.App;
 public class Principal extends javax.swing.JFrame {
 
     private static Principal mainFrameInstance;
+    private ImagesManager imagesManager;
     App app = App.getInstance();
 
     /**
@@ -29,14 +39,16 @@ public class Principal extends javax.swing.JFrame {
         this.setTitle("Main Battle View");
 
         // Propiedades
+        this.imagesManager = new ImagesManager();
         IAStatusLabel.setText("");
         winnerLabel.setText("");
-        
+
         // Configurar el slider de velodiad 
         battleDurationSlider.setOpaque(false);
         battleDurationSlider.setMinimum(1);
         battleDurationSlider.setMaximum(15);
         battleDurationSlider.setValue(App.getBattleDuration());
+        // Para mostrar las imágenes iniciales
     }
 
     public static synchronized Principal getPrincipalInstance() {
@@ -46,18 +58,68 @@ public class Principal extends javax.swing.JFrame {
         return getMainFrameInstance();
     }
 
-    // Método para actualizar la imagen en el JPanel
-    public void updateStarWarsImageIcon(ImageIcon newImageIcon) {
-        this.SWImageLabel.setIcon(newImageIcon);
-        revalidate();
-        repaint();
+// Método para actualizar las colas con imágenes en el JScrollPane
+    public void updateQueues() {
+        Studio firstStudio = app.getSimulation().getFirstStudio();
+        Studio secondStudio = app.getSimulation().getSecondStudio();
+
+        // Obtener las colas de prioridad de cada estudio
+        OurQueue<Character> starWarsPriority1 = firstStudio.getPrior0_queue();
+        OurQueue<Character> starWarsPriority2 = firstStudio.getPrior1_queue();
+        OurQueue<Character> starWarsPriority3 = firstStudio.getPrior2_queue();
+        OurQueue<Character> starWarsRQ = firstStudio.getReinforcement_queue();
+
+        OurQueue<Character> starTrekPriority1 = secondStudio.getPrior0_queue();
+        OurQueue<Character> starTrekPriority2 = secondStudio.getPrior1_queue();
+        OurQueue<Character> starTrekPriority3 = secondStudio.getPrior2_queue();
+        OurQueue<Character> starTrekRQ = secondStudio.getReinforcement_queue();
+
+        // Asignar paneles a cada JScrollPane usando el nuevo método getImagesFromQueue
+        updateQueueVisual(swQueue1, starWarsPriority1);
+        updateQueueVisual(swQueue2, starWarsPriority2);
+        updateQueueVisual(swQueue3, starWarsPriority3);
+        updateQueueVisual(stQueue1, starTrekPriority1);
+        updateQueueVisual(stQueue2, starTrekPriority2);
+        updateQueueVisual(stQueue3, starTrekPriority3);
+
+        updateQueueVisual(swReinQueue, starWarsRQ);
+        updateQueueVisual(stReinQueue, starTrekRQ);
     }
 
-    public void updateStarTrekImageIcon(ImageIcon newImageIcon) {
-        this.STImageLabel.setIcon(newImageIcon);
-        revalidate();
-        repaint();
+    private void updateQueueVisual(JScrollPane scrollPane, OurQueue<Character> queue) {
+        SimpleList<ImageIcon> images = getImagesManager().getImagesFromQueue(queue);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+
+        if (images == null || images.getSize() == 0) {
+            JLabel emptyLabel = new JLabel("Sin imágenes disponibles");
+            panel.add(emptyLabel);
+        } else {
+            for (int i = 0; i < images.getSize(); i++) {
+                ImageIcon image = images.getValueByIndex(i);
+                if (image != null) {
+                    JLabel imageLabel = new JLabel(image);
+                    panel.add(imageLabel);
+                }
+            }
+        }
+
+        scrollPane.setViewportView(panel);
     }
+
+//    // Método para actualizar la imagen en el JPanel
+//    public void updateStarWarsImageIcon(ImageIcon newImageIcon) {
+//        this.SWImageLabel.setIcon(newImageIcon);
+//        revalidate();
+//        repaint();
+//    }
+//
+//    public void updateStarTrekImageIcon(ImageIcon newImageIcon) {
+//        this.STImageLabel.setIcon(newImageIcon);
+//        revalidate();
+//        repaint();
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -91,9 +153,9 @@ public class Principal extends javax.swing.JFrame {
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
-        jScrollPane13 = new javax.swing.JScrollPane();
+        swReinQueue = new javax.swing.JScrollPane();
         jLabel15 = new javax.swing.JLabel();
-        jScrollPane20 = new javax.swing.JScrollPane();
+        stReinQueue = new javax.swing.JScrollPane();
         FightPanel = new javax.swing.JPanel();
         IAStatusLabel = new javax.swing.JLabel();
         jLabel30 = new javax.swing.JLabel();
@@ -114,18 +176,18 @@ public class Principal extends javax.swing.JFrame {
         jLabel48 = new javax.swing.JLabel();
         jLabel49 = new javax.swing.JLabel();
         SWQueuePanel = new javax.swing.JPanel();
-        jScrollPane17 = new javax.swing.JScrollPane();
-        jScrollPane18 = new javax.swing.JScrollPane();
-        jScrollPane9 = new javax.swing.JScrollPane();
+        swQueue1 = new javax.swing.JScrollPane();
+        swQueue2 = new javax.swing.JScrollPane();
+        swQueue3 = new javax.swing.JScrollPane();
         jLabel13 = new javax.swing.JLabel();
         jLabel20 = new javax.swing.JLabel();
         jLabel21 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
         SWLogoLabel = new javax.swing.JLabel();
         STQueuePanel = new javax.swing.JPanel();
-        jScrollPane16 = new javax.swing.JScrollPane();
-        jScrollPane15 = new javax.swing.JScrollPane();
-        jScrollPane7 = new javax.swing.JScrollPane();
+        stQueue1 = new javax.swing.JScrollPane();
+        stQueue2 = new javax.swing.JScrollPane();
+        stQueue3 = new javax.swing.JScrollPane();
         jLabel7 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
@@ -225,13 +287,13 @@ public class Principal extends javax.swing.JFrame {
         jPanel6.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 20, -1, -1));
 
         jPanel5.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 630, 1190, 170));
-        jPanel5.add(jScrollPane13, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 50, 260, 70));
+        jPanel5.add(swReinQueue, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 50, 260, 70));
 
         jLabel15.setFont(new java.awt.Font("Tw Cen MT Condensed", 1, 24)); // NOI18N
         jLabel15.setForeground(new java.awt.Color(255, 255, 255));
         jLabel15.setText("COLA DE REFUERZO 1");
         jPanel5.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, -1, -1));
-        jPanel5.add(jScrollPane20, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 50, 260, 70));
+        jPanel5.add(stReinQueue, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 50, 260, 70));
 
         getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 660, 1270, 140));
 
@@ -328,9 +390,9 @@ public class Principal extends javax.swing.JFrame {
 
         SWQueuePanel.setBackground(new java.awt.Color(0, 0, 0));
         SWQueuePanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        SWQueuePanel.add(jScrollPane17, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 240, 210, 90));
-        SWQueuePanel.add(jScrollPane18, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 390, 210, 90));
-        SWQueuePanel.add(jScrollPane9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 540, 210, 90));
+        SWQueuePanel.add(swQueue1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 240, 210, 90));
+        SWQueuePanel.add(swQueue2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 390, 210, 90));
+        SWQueuePanel.add(swQueue3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 540, 210, 90));
 
         jLabel13.setBackground(new java.awt.Color(255, 255, 255));
         jLabel13.setFont(new java.awt.Font("Tw Cen MT Condensed", 1, 24)); // NOI18N
@@ -364,9 +426,9 @@ public class Principal extends javax.swing.JFrame {
 
         STQueuePanel.setBackground(new java.awt.Color(0, 0, 0));
         STQueuePanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        STQueuePanel.add(jScrollPane16, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 240, 210, 90));
-        STQueuePanel.add(jScrollPane15, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 390, 210, 90));
-        STQueuePanel.add(jScrollPane7, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 540, 210, 90));
+        STQueuePanel.add(stQueue1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 240, 210, 90));
+        STQueuePanel.add(stQueue2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 390, 210, 90));
+        STQueuePanel.add(stQueue3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 540, 210, 90));
 
         jLabel7.setBackground(new java.awt.Color(255, 255, 255));
         jLabel7.setFont(new java.awt.Font("Tw Cen MT Condensed", 1, 24)); // NOI18N
@@ -491,19 +553,19 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane11;
     private javax.swing.JScrollPane jScrollPane12;
-    private javax.swing.JScrollPane jScrollPane13;
-    private javax.swing.JScrollPane jScrollPane15;
-    private javax.swing.JScrollPane jScrollPane16;
-    private javax.swing.JScrollPane jScrollPane17;
-    private javax.swing.JScrollPane jScrollPane18;
-    private javax.swing.JScrollPane jScrollPane20;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
-    private javax.swing.JScrollPane jScrollPane7;
-    private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JSlider jSlider2;
     private javax.swing.JSlider jSlider4;
+    private javax.swing.JScrollPane stQueue1;
+    private javax.swing.JScrollPane stQueue2;
+    private javax.swing.JScrollPane stQueue3;
+    private javax.swing.JScrollPane stReinQueue;
+    private javax.swing.JScrollPane swQueue1;
+    private javax.swing.JScrollPane swQueue2;
+    private javax.swing.JScrollPane swQueue3;
+    private javax.swing.JScrollPane swReinQueue;
     private javax.swing.JLabel winnerLabel;
     // End of variables declaration//GEN-END:variables
 
@@ -533,6 +595,104 @@ public class Principal extends javax.swing.JFrame {
      */
     public void setBattleDurationSlider(javax.swing.JSlider battleDurationSlider) {
         this.battleDurationSlider = battleDurationSlider;
+    }
+
+    /**
+     * @return the stQueue1
+     */
+    public javax.swing.JScrollPane getStQueue1() {
+        return stQueue1;
+    }
+
+    /**
+     * @param stQueue1 the stQueue1 to set
+     */
+    public void setStQueue1(javax.swing.JScrollPane stQueue1) {
+        this.stQueue1 = stQueue1;
+    }
+
+    /**
+     * @return the stQueue2
+     */
+    public javax.swing.JScrollPane getStQueue2() {
+        return stQueue2;
+    }
+
+    /**
+     * @param stQueue2 the stQueue2 to set
+     */
+    public void setStQueue2(javax.swing.JScrollPane stQueue2) {
+        this.stQueue2 = stQueue2;
+    }
+
+    /**
+     * @return the stQueue3
+     */
+    public javax.swing.JScrollPane getStQueue3() {
+        return stQueue3;
+    }
+
+    /**
+     * @param stQueue3 the stQueue3 to set
+     */
+    public void setStQueue3(javax.swing.JScrollPane stQueue3) {
+        this.stQueue3 = stQueue3;
+    }
+
+    /**
+     * @return the swQueue1
+     */
+    public javax.swing.JScrollPane getSwQueue1() {
+        return swQueue1;
+    }
+
+    /**
+     * @param swQueue1 the swQueue1 to set
+     */
+    public void setSwQueue1(javax.swing.JScrollPane swQueue1) {
+        this.swQueue1 = swQueue1;
+    }
+
+    /**
+     * @return the swQueue2
+     */
+    public javax.swing.JScrollPane getSwQueue2() {
+        return swQueue2;
+    }
+
+    /**
+     * @param swQueue2 the swQueue2 to set
+     */
+    public void setSwQueue2(javax.swing.JScrollPane swQueue2) {
+        this.swQueue2 = swQueue2;
+    }
+
+    /**
+     * @return the swQueue3
+     */
+    public javax.swing.JScrollPane getSwQueue3() {
+        return swQueue3;
+    }
+
+    /**
+     * @param swQueue3 the swQueue3 to set
+     */
+    public void setSwQueue3(javax.swing.JScrollPane swQueue3) {
+        this.swQueue3 = swQueue3;
+    }
+
+    /**
+     * @return the imagesManager
+     */
+    public ImagesManager getImagesManager() {
+        return imagesManager;
+    }
+
+    /**
+     * @param imagesManager the imagesManager to set
+     */
+    public void setImagesManager(ImagesManager imagesManager) {
+        this.imagesManager = imagesManager;
     }
 
 }

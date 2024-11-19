@@ -17,7 +17,7 @@ public class Administrator {
     private Studio secondStudio; // Star Trek
     private static double NEW_CHAR_PROB = 0.8;
 
-    public Administrator(Studio studioStarWars, Studio studioStarTrek, int ciclickCheck) {
+    public Administrator(Studio studioStarWars, Studio studioStarTrek) {
         this.firstStudio = studioStarWars;
         this.secondStudio = studioStarTrek;
     }
@@ -146,8 +146,8 @@ public class Administrator {
     private void addNewCharToQueues() {
         Random random = new Random();
         if (random.nextDouble() < getNEW_CHAR_PROB()) {
-            Character newStarWarsChar = this.getFirstStudio().createCharacter();
-            Character newStarTrekChar = this.getSecondStudio().createCharacter();
+            Character newStarWarsChar = this.getFirstStudio().createAndEnqueueCharacter();
+            Character newStarTrekChar = this.getSecondStudio().createAndEnqueueCharacter();
 
             // Agregar personajes a las colas de prioridad según su nivel inicial
             this.insertCharByPriority(newStarWarsChar, this.getFirstStudio());

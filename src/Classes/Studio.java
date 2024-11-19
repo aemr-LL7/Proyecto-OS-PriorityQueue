@@ -6,6 +6,7 @@ package Classes;
 
 import EDD.OurQueue;
 import EDD.SimpleList;
+import GUI.Principal;
 import Managers.ImagesManager;
 
 /**
@@ -25,44 +26,42 @@ public class Studio {
     private OurQueue<Character> prior2_queue;
     private OurQueue<Character> reinforcement_queue;
 
-    // Images Manager
-    private ImagesManager imagesManager;
-
     public Studio(String studioLabel) {
         this.studioLabel = studioLabel;
-        this.prior0_queue = new OurQueue();
-        this.prior1_queue = new OurQueue();
-        this.prior2_queue = new OurQueue();
+        this.prior0_queue = new OurQueue<>();
+        this.prior1_queue = new OurQueue<>();
+        this.prior2_queue = new OurQueue<>();
         this.reinforcement_queue = new OurQueue();
         this.chr_list = new SimpleList(); // Inicializa la lista de personajes
         this.idCounter = 0;
-        // Inicializamos el ImagesManager
-        this.imagesManager = new ImagesManager();
     }
 
-    public Character createCharacter() {
-        String characterId = this.getStudioLabel() + "-" + this.idCounter++; // Crea un ID unico para el personaje
+    public Character createAndEnqueueCharacter() {
+        String characterId = this.getStudioLabel().replace(" ", "") + "-" + this.idCounter++; // Crea un ID unico para el personaje
         Character newCharacter = new Character(characterId, this.getStudioLabel());
-        this.getChr_list().addAtTheEnd(newCharacter); // Agrega el personaje a la lista de personajes disponibles
 
         // Asigna una imagen única del Star Wars o Star Trek y a su vez el nombre del personaje
-        imagesManager.assignUniqueImage(newCharacter,
-                this.getStudioLabel().equalsIgnoreCase("Star Wars") ? "./src/GUI/Assets/StarWars" : "./src/GUI/Assets/StarTrek",
-                true);
-        
+        Principal.getPrincipalInstance().getImagesManager().assignImage(newCharacter, this.getStudioLabel().equalsIgnoreCase("Star Wars") ? "./src/GUI/Assets/StarWars" : "./src/GUI/Assets/StarTrek");
+
+        this.getChr_list().addAtTheEnd(newCharacter); // Agrega el personaje a la lista de personajes disponibles
+
         int charPrio = newCharacter.getPrio_level();
-        
-        
-        if (charPrio == 0){
-            this.getPrior0_queue().insert(newCharacter);
-        } else if (charPrio == 1){
-            this.getPrior1_queue().insert(newCharacter);
-        } else if (charPrio == 2){
-            this.getPrior2_queue().insert(newCharacter);
+
+        switch (charPrio) {
+            case 0:
+                this.getPrior0_queue().insert(newCharacter);
+                break;
+            case 1:
+                this.getPrior1_queue().insert(newCharacter);
+                break;
+            case 2:
+                this.getPrior2_queue().insert(newCharacter);
+                break;
+            default:
+                break;
         }
-        
+
         return newCharacter;
-        
     }
 
     //Implementar borrar personaje en algun momento de la lista, el personaje esta fuera de la simulacion al estar fuera de las colas.
