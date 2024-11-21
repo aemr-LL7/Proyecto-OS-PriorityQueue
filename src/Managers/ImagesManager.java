@@ -68,12 +68,24 @@ public class ImagesManager {
                 ImageIcon resizedIcon = new ImageIcon(resizedImage);
                 imageList.addAtTheEnd(resizedIcon); // Añadimos la imagen a la lista
             } else {
-                System.err.println("El Character no tiene una imagen válida.");
+                System.err.println("El Character no tiene una imagen valida.");
             }
 
             currentNode = currentNode.getpNext();
         }
 
         return imageList;
+    }
+
+    public ImageIcon reScaleImage(ImageIcon originalImage, int width, int height) {
+        if (originalImage != null) {
+            // Redimensionar la imagen
+            Image resizedImage = originalImage.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            ImageIcon resizedIcon = new ImageIcon(resizedImage);
+            return resizedIcon;
+        } else {
+            System.err.println("El Character no tiene una imagen valida.");
+        }
+        return originalImage;
     }
 }

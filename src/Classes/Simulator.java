@@ -59,7 +59,7 @@ public class Simulator extends Thread {
         System.out.println("COLAS DE PRIORIDAD:\n    Cola 0 size: " + this.getSecondStudio().getPrior0_queue().getSize() + "\n    Cola 1 size: " + this.getSecondStudio().getPrior1_queue().getSize() + "\n    Cola 2 size: " + this.getSecondStudio().getPrior2_queue().getSize());
 
         // INICIALIZAR IMAGENES DE LAS COLAS (PERSONAJES) EN LA GUI
-         Principal.getPrincipalInstance().updateQueues();
+        Principal.getPrincipalInstance().updateQueuesUI();
         // INICIAR VENTANA ARENA
         Principal.getPrincipalInstance().setVisible(true);
 
