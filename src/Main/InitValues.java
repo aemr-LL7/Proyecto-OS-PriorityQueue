@@ -14,23 +14,25 @@ import Classes.Studio;
  * @author HP-Probook
  */
 public class InitValues {
-    public static void initializeParams(){
+
+    public static void initializeParams() {
         App app = App.getInstance();
-        app.setIa(new AIProcessor());
-        
+
         Studio starWarsStudios = new Studio("Star Wars");
         Studio starTrekStudios = new Studio("Star Trek");
-        
-        Administrator admin = new Administrator(starWarsStudios,starTrekStudios);
+        Administrator admin = new Administrator(starWarsStudios, starTrekStudios);
+        app.setAdmin(admin);
+        app.setIa(new AIProcessor());
+
         Simulator simulation = new Simulator(app.getIa(), app.getAdmin(), app.getSemaphore());
-        
+
         app.setSimulation(simulation);
         app.getSimulation().getAI().setAdmin(admin);
         app.getSimulation().setFirstStudio(starWarsStudios);
         app.getSimulation().setSecondStudio(starTrekStudios);
-        
+
         // Iniciar simulacion (crear personajes)
         app.getSimulation().initializeSimulation();
-        
+
     }
 }

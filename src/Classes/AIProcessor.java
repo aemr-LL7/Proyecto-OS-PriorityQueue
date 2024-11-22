@@ -49,7 +49,7 @@ public class AIProcessor extends Thread {
         // ACTUALIZAR ANUNCIADOR (GUI)
         System.out.println("inicia ronda: " + roundCounter + " " + first.getName() + " vs " + second.getName());
         Principal.getPrincipalInstance().getAnnouncerLabel().setText("INICIA RONDA: " + first.getName() + " vs " + second.getName());
-        
+
         //Ataca el primer personaje.
         int firstAttackRoll = first.rollAttack();
 
@@ -105,11 +105,11 @@ public class AIProcessor extends Thread {
 
                     Character fighter1 = getAdmin().provideFighter("Star Wars");
                     Character fighter2 = getAdmin().provideFighter("Star Trek");
-                    
-                    System.out.println("PERSONAJESSSSSSS: "+fighter1.getName() + " " + fighter2.getName());
+
+                    System.out.println("PERSONAJESSSSSSS: " + fighter1.getName() + " " + fighter2.getName());
 
                     if (fighter1 != null && fighter2 != null) {
-                        processCombat(fighter1, fighter2);
+                         processCombat(fighter1, fighter2);
                     } else {
                         System.out.println("No se pudieron obtener luchadores válidos.");
                         this.setStatus("Waiting");
@@ -119,10 +119,10 @@ public class AIProcessor extends Thread {
                         continue;
                     }
 
+                    Thread.sleep(1000 * duration / 2);
                     this.setStatus("Announcing");
                     // ACTUALIZAR ESTADO DE AI EN LA GUI
                     Principal.getPrincipalInstance().getIAStatusLabel().setText("Announcing");
-                    Thread.sleep(1000 * duration / 2);
                     this.semaphore.release();
                 }
             }
@@ -138,8 +138,8 @@ public class AIProcessor extends Thread {
         if (outcome == 0) {
             System.out.println("Combate entre " + fighter1.getName() + " y " + fighter2.getName());
             // ACTUALIZAR ANUNCIADOR CON LA INFO DE LA BATALLA
-            Principal.getPrincipalInstance().getAnnouncerLabel().setText("Combate entre "+ fighter1.getName() + " y " + fighter2.getName() + ".");
-        
+            Principal.getPrincipalInstance().getAnnouncerLabel().setText("Combate entre " + fighter1.getName() + " y " + fighter2.getName() + ".");
+
             // MOSTRAR INFORMACION DE LOS PELEADORES (GUI)
             this.updateFighterCardsUI(fighter1, fighter2);
 
@@ -149,30 +149,35 @@ public class AIProcessor extends Thread {
             // SETTEAR NUMERO DE ROUND EN LA ARENA
             int roundCounter = 1;
             Principal.getPrincipalInstance().getRoundCounterLabel().setText(String.valueOf(roundCounter));
-            
+
             while (fighter1.getHealth_pts() > 0 && fighter2.getHealth_pts() > 0) {
                 round(first, second, roundCounter);
                 roundCounter++;
+                System.out.println("Rondita : " + roundCounter);;
             }
 
+            this.setStatus("Announcing");
             Character winner = (fighter1.getHealth_pts() > 0) ? fighter1 : fighter2;
             logWinner(winner);
 
         } else if (outcome == 1) {
             System.out.println("EMPATE: Ambos luchadores se encolan a la cola de NIVEL 1");
             Principal.getPrincipalInstance().getAnnouncerLabel().setText("EMPATE: Ambos luchadores se encolan a la cola de NIVEL 1");
-        
-            getAdmin().ReEnqueueFighter(fighter1, 1);
-            getAdmin().ReEnqueueFighter(fighter2, 1);
+
+            getAdmin().ReEnqueueFighter(fighter1, 0);
+            getAdmin().ReEnqueueFighter(fighter2, 0);
+            this.setStatus("Announcing");
             this.setLastWinner(null);
         } else if (outcome == 2) {
             System.out.println("Sin Combate: Ambos luchadores han sido ingresados a la cola de refuerzo");
             Principal.getPrincipalInstance().getAnnouncerLabel().setText("Sin Combate: Ambos luchadores ingresan a la cola de refuerzo");
-        
+
             getAdmin().reinforceFighter(fighter1);
             getAdmin().reinforceFighter(fighter2);
             this.setLastWinner(null);
+            this.setStatus("Announcing");
         }
+
     }
 
     private int isThereCombat(Character fighter1, Character fighter2) {
@@ -186,13 +191,9 @@ public class AIProcessor extends Thread {
 
         } else if (outCome < 67) { // 27% de empate
 
-//            getAdmin().ReEnqueueFighter(fighter1, 0);
-//            getAdmin().ReEnqueueFighter(fighter2, 0);
             return 1;
 
         } else {
-//            getAdmin().reinforceFighter(fighter1);
-//            getAdmin().reinforceFighter(fighter2);
             return 2;
         }
     }

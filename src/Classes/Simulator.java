@@ -82,7 +82,8 @@ public class Simulator extends Thread {
                     getSemaphore().release();
                     Thread.sleep(1000);  // Simula la espera de la IA para procesar el siguiente combate
                 }
-                if (this.getAI().getStatus().equals("Announcing")) {
+                
+                else if (!this.getAI().getStatus().equals("Waiting")) {
                     getSemaphore().acquire();
 
                     this.cycleCheck++;
@@ -98,7 +99,6 @@ public class Simulator extends Thread {
                         }
                     }
 
-                    this.getAI().setStatus("Waiting");
                     getSemaphore().release();
                 }
             }
@@ -151,81 +151,7 @@ public class Simulator extends Thread {
 
         System.out.println("Cola de " + studio.getStudioLabel() + ": " + queue);
     }
-//
-//    @Override
-//    public void run() {
-//        try {
-//            //Tomar semaphore
-//            this.getSemaphore().acquire();
-//
-//            // Iniciar el hilo de AIProcessor
-//            getAI().start();
-//
-//            // Ciclo de control de simulación
-//            while (!this.isDone()) {
-//
-//                if (this.getAI().getStatus().equals("Waiting")) {
-//                    // Liberar el semáforo para permitir un ciclo de combate en AIProcessor
-//                    getSemaphore().release();
-//                }
-//                if (this.getAI().getStatus().equals("Announcing")) {
-//
-//                    getSemaphore().acquire();
-//
-//                    this.cycleCheck++;
-//
-//                    //logica de colas
-//                    getAdmin().updateQueues(cycleCheck);
-//
-//                    Character winner = this.getAI().getLastWinner();
-//                    if (winner != null) {
-//                        Studio winnerStudio = (winner.getSeries().equals("Star Wars")) ? firstStudio : secondStudio;
-//                        winner.setPrio_level(2);
-//                        winnerStudio.getPrior2_queue().insert(winner);//devolver al personaje a la cola de prio 2
-//                        if (!this.getWinners_list().contains(winner)) {
-//                            this.getWinners_list().addStart(winner);//Anadirlo en la lista de ganadores si no esta ya
-//                        }
-//
-//                    }
-//
-//                    //Actualizamos el estado de la inteligencia y devolvemos el semaforo
-//                    this.getAI().setStatus("Waiting");
-//                    getSemaphore().release();
-//                }
-//
-//            }
-//
-//            // Mostrar el estado final
-//            System.out.println("Simulación finalizada: tiempo de batalla completado.");
-//
-//            // Mostrar los personajes restantes en cada estudio
-//            System.out.println("\nEstado final de los personajes:");
-//            System.out.println(getFirstStudio().getStudioLabel() + " tiene los siguientes personajes:");
-//            for (int i = 0; i < getFirstStudio().getChr_list().getSize(); i++) {
-//                System.out.println("- " + getFirstStudio().getChr_list().getValueByIndex(i).getId());
-//            }
-//
-//            System.out.println(getSecondStudio().getStudioLabel() + " tiene los siguientes personajes:");
-//            for (int i = 0; i < getSecondStudio().getChr_list().getSize(); i++) {
-//                System.out.println("- " + getSecondStudio().getChr_list().getValueByIndex(i).getId());
-//            }
-//
-//            // Mostrar las colas de prioridad y refuerzo
-//            System.out.println("\nColas de prioridad:");
-//            System.out.println("Cola de " + getFirstStudio().getStudioLabel() + ": " + getFirstStudio().getPrior0_queue());
-//            System.out.println("Cola de " + getFirstStudio().getStudioLabel() + ": " + getFirstStudio().getPrior1_queue());
-//            System.out.println("Cola de " + getFirstStudio().getStudioLabel() + ": " + getFirstStudio().getPrior2_queue());
-//            System.out.println("Cola de " + getSecondStudio().getStudioLabel() + ": " + getSecondStudio().getPrior0_queue());
-//            System.out.println("Cola de " + getSecondStudio().getStudioLabel() + ": " + getSecondStudio().getPrior1_queue());
-//            System.out.println("Cola de " + getSecondStudio().getStudioLabel() + ": " + getSecondStudio().getPrior2_queue());
-//
-//            System.out.println("\nColas de refuerzo:");
-//            System.out.println("Cola de refuerzo de " + getFirstStudio().getStudioLabel() + ": " + getFirstStudio().getReinforcement_queue());
-//            System.out.println("Cola de refuerzo de " + getSecondStudio().getStudioLabel() + ": " + getSecondStudio().getReinforcement_queue());
-//        } catch (InterruptedException ex) {
-//            Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//    }
+
 
     private boolean isDone() {
         return false;//cambiar para que revise si alguno de los dos estudios se quedo sin cola
