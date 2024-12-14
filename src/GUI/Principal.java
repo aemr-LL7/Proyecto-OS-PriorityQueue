@@ -60,18 +60,18 @@ public class Principal extends javax.swing.JFrame {
 
 // Método para actualizar las colas con imágenes en el JScrollPane
     public void updateQueuesUI() {
-        Studio firstStudio = app.getSimulation().getFirstStudio();
-        Studio secondStudio = app.getSimulation().getSecondStudio();
+        Studio firstStudio = app.getAdmin().getFirstStudio();
+        Studio secondStudio = app.getAdmin().getSecondStudio();
 
         // Obtener las colas de prioridad de cada estudio
-        OurQueue<Character> starWarsPriority1 = firstStudio.getPrior0_queue();
-        OurQueue<Character> starWarsPriority2 = firstStudio.getPrior1_queue();
-        OurQueue<Character> starWarsPriority3 = firstStudio.getPrior2_queue();
+        OurQueue<Character> starWarsPriority1 = firstStudio.getPrior1_queue();
+        OurQueue<Character> starWarsPriority2 = firstStudio.getPrior2_queue();
+        OurQueue<Character> starWarsPriority3 = firstStudio.getPrior3_queue();
         OurQueue<Character> starWarsRQ = firstStudio.getReinforcement_queue();
 
-        OurQueue<Character> starTrekPriority1 = secondStudio.getPrior0_queue();
-        OurQueue<Character> starTrekPriority2 = secondStudio.getPrior1_queue();
-        OurQueue<Character> starTrekPriority3 = secondStudio.getPrior2_queue();
+        OurQueue<Character> starTrekPriority1 = secondStudio.getPrior1_queue();
+        OurQueue<Character> starTrekPriority2 = secondStudio.getPrior2_queue();
+        OurQueue<Character> starTrekPriority3 = secondStudio.getPrior3_queue();
         OurQueue<Character> starTrekRQ = secondStudio.getReinforcement_queue();
 
         // Asignar paneles a cada JScrollPane usando el nuevo método getImagesFromQueue
@@ -319,83 +319,85 @@ public class Principal extends javax.swing.JFrame {
 
         jLabel30.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 24)); // NOI18N
         jLabel30.setText("Vida actual: ");
-        FightPanel.add(jLabel30, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 370, -1, -1));
+        FightPanel.add(jLabel30, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 380, -1, -1));
 
         stFighterNameLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 24)); // NOI18N
         stFighterNameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         stFighterNameLabel.setText("NAME");
-        FightPanel.add(stFighterNameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 320, -1, -1));
+        FightPanel.add(stFighterNameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 340, -1, -1));
 
         jLabel32.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 24)); // NOI18N
         jLabel32.setText("Vida actual: ");
-        FightPanel.add(jLabel32, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 370, -1, -1));
+        FightPanel.add(jLabel32, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 380, -1, -1));
 
         swFighterNameLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 24)); // NOI18N
         swFighterNameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         swFighterNameLabel.setText("NAME");
-        FightPanel.add(swFighterNameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 320, -1, -1));
+        FightPanel.add(swFighterNameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 340, -1, -1));
 
         winnerLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
+        winnerLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         winnerLabel.setText("Ganador");
-        FightPanel.add(winnerLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 410, -1, -1));
+        FightPanel.add(winnerLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 220, 80, -1));
 
         SWFighterCard.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         SWImageLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        SWFighterCard.add(SWImageLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(4, 5, 200, 210));
+        SWFighterCard.add(SWImageLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(4, 5, 190, 230));
 
-        FightPanel.add(SWFighterCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 90, 210, 220));
+        FightPanel.add(SWFighterCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 90, 200, 240));
 
         STFighterCard.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         STImageLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        STFighterCard.add(STImageLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(4, 5, 200, 210));
+        STFighterCard.add(STImageLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(4, 5, 180, 230));
 
-        FightPanel.add(STFighterCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 90, 210, 220));
+        FightPanel.add(STFighterCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 90, 190, 240));
 
         announcerLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 18)); // NOI18N
         announcerLabel.setText("ANNOUNCER");
-        FightPanel.add(announcerLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 20, -1, -1));
+        FightPanel.add(announcerLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 30, -1, -1));
 
         swAgilityLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
         swAgilityLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         swAgilityLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Assets/icons/agility32.png"))); // NOI18N
         swAgilityLabel.setText("0");
-        FightPanel.add(swAgilityLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, -1, -1));
+        FightPanel.add(swAgilityLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 210, -1, -1));
 
         jLabel44.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
+        jLabel44.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel44.setText("Ganador");
-        FightPanel.add(jLabel44, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 370, -1, -1));
+        FightPanel.add(jLabel44, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 180, 80, -1));
 
         swHPLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
         swHPLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         swHPLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Assets/icons/heart32.png"))); // NOI18N
         swHPLabel.setText("0");
-        FightPanel.add(swHPLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, -1, -1));
+        FightPanel.add(swHPLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 110, -1, -1));
 
         swDefenseLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
         swDefenseLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         swDefenseLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Assets/icons/shield32.png"))); // NOI18N
         swDefenseLabel.setText("0");
-        FightPanel.add(swDefenseLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, -1, -1));
+        FightPanel.add(swDefenseLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 160, -1, -1));
 
         stHPLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
         stHPLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         stHPLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Assets/icons/heart32.png"))); // NOI18N
         stHPLabel.setText("0");
-        FightPanel.add(stHPLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 100, -1, -1));
+        FightPanel.add(stHPLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 110, -1, -1));
 
         stDefenseLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
         stDefenseLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         stDefenseLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Assets/icons/shield32.png"))); // NOI18N
         stDefenseLabel.setText("0");
-        FightPanel.add(stDefenseLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 150, -1, -1));
+        FightPanel.add(stDefenseLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 160, -1, -1));
 
         stAgilityLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
         stAgilityLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         stAgilityLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Assets/icons/agility32.png"))); // NOI18N
         stAgilityLabel.setText("0");
-        FightPanel.add(stAgilityLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 200, -1, -1));
+        FightPanel.add(stAgilityLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 210, -1, -1));
 
         getContentPane().add(FightPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 120, 730, 540));
 

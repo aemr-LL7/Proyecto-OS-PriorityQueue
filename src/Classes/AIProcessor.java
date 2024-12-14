@@ -18,8 +18,8 @@ import javax.swing.ImageIcon;
 public class AIProcessor extends Thread {
 
     private Administrator admin;
-    private Studio starWarsStudio;
-    private Studio starTrekStudio;
+    private Character starWarsPlayer;
+    private Character starTrekPlayer;
     private Semaphore semaphore;
     private String status;
 
@@ -28,6 +28,7 @@ public class AIProcessor extends Thread {
     private int duration; //int multiplicado por 1000 para simular segundos
 
     private Character lastWinner;
+    private int round;
     private int lastCombatRounds;
 
     public AIProcessor() {
@@ -35,6 +36,7 @@ public class AIProcessor extends Thread {
         this.semaphore = App.getApp().getSemaphore();
         this.duration = App.getApp().getBattleDuration();
         this.status = "Waiting";
+        this.round = 0;
         this.lastWinner = null;
     }
 
@@ -45,7 +47,7 @@ public class AIProcessor extends Thread {
         return (fighter1Initiative >= fighter2Initiative) ? fighter1 : fighter2;
     }
 
-    private void round(Character first, Character second, int roundCounter) {
+    private void roundFight(Character first, Character second, int roundCounter) {
         // ACTUALIZAR ANUNCIADOR (GUI)
         System.out.println("inicia ronda: " + roundCounter + " " + first.getName() + " vs " + second.getName());
         Principal.getPrincipalInstance().getAnnouncerLabel().setText("INICIA RONDA: " + first.getName() + " vs " + second.getName());
@@ -58,10 +60,10 @@ public class AIProcessor extends Thread {
 
         //Se resta la fuerza del primero menos la defensa del segundo contra el segundo si logra defender el ataque.
         if (secondDefenceRoll >= firstAttackRoll) {
-            second.takeDamage(first.getStrength_pts() - second.getBlock_factor());
+            second.takeDamage(first.getStrength() - second.getBlock_factor());
         } else if (firstAttackRoll > secondDefenceRoll) {
             //Se resta toda la fuerza del primero si no logra defender el segundo.
-            second.takeDamage(first.getStrength_pts());
+            second.takeDamage(first.getStrength());
         }
 
         //Ataca el segundo personaje
@@ -71,152 +73,139 @@ public class AIProcessor extends Thread {
         int firstDefenceRoll = first.rollAttack();
 
         if (firstDefenceRoll >= secondAttackRoll) {
-            first.takeDamage(second.getStrength_pts() - first.getBlock_factor());
+            first.takeDamage(second.getStrength() - first.getBlock_factor());
         } else if (secondAttackRoll > firstDefenceRoll) {
-            first.takeDamage(second.getStrength_pts());
+            first.takeDamage(second.getStrength());
         }
 
     }
 
-    private void logWinner(Character winner) {
-
-        if (winner.getSeries().equals("Star Wars")) {
-            this.starWarsWins++;
-        } else {
-            this.starTrekWins++;
-        }
-
-        this.setLastWinner(winner);
-        winner.addWin();
-
-    }
+//    private void logWinner(Character winner) {
+//
+//        if (winner.getSeries().equals("Star Wars")) {
+//            this.starWarsWins++;
+//        } else {
+//            this.starTrekWins++;
+//        }
+//
+//        this.setLastWinner(winner);
+//        winner.addWin();
+//
+//    }
 
     @Override
     public void run() {
-        try {
-            while (true) {
+        while (true) {
+            try {
                 if (this.status.equals("Waiting")) {
                     this.semaphore.acquire();
-
                     this.setStatus("Deciding");
-                    // ACTUALIZAR ESTADO DE AI EN LA GUI
-                    Principal.getPrincipalInstance().getIAStatusLabel().setText("Deciding");
-                    Thread.sleep(1000 * duration / 2);
 
-                    Character fighter1 = getAdmin().provideFighter("Star Wars");
-                    Character fighter2 = getAdmin().provideFighter("Star Trek");
+                    this.round += 1;
 
-                    System.out.println("PERSONAJESSSSSSS: " + fighter1.getName() + " " + fighter2.getName());
+                    // Provisión de luchadores usando métodos centralizados
+                    Character fighter1 = this.getStarWarsPlayer();
+                    Character fighter2 = this.getStarTrekPlayer();
 
                     if (fighter1 != null && fighter2 != null) {
-                         processCombat(fighter1, fighter2);
+                        // SETTEAR NUMERO DE ROUND EN LA ARENA
+                        Principal.getPrincipalInstance().getRoundCounterLabel().setText(String.valueOf(this.round));
+
+                        double aux = Math.random();
+
+                        if (aux <= 0.4) {
+                            System.out.println("Combate entre " + fighter1.getName() + " y " + fighter2.getName());
+                            // ACTUALIZAR ANUNCIADOR CON LA INFO DE LA BATALLA
+                            Principal.getPrincipalInstance().getAnnouncerLabel().setText("Combate entre " + fighter1.getName() + " y " + fighter2.getName() + ".");
+
+                            // MOSTRAR INFORMACION DE LOS PELEADORES (GUI)
+                            this.updateFighterCardsUI(fighter1, fighter2);
+
+                            Character first = determineInitiativeWinner(fighter1, fighter2);
+                            Character second = (first == fighter1) ? fighter2 : fighter1;
+
+                            while (fighter1.getHealth() > 0 && fighter2.getHealth() > 0) {
+                                this.roundFight(first, second, this.round);
+                                System.out.println("Rondita : " + this.round);
+                            }
+
+                            this.setStatus("Announcing");
+                            Character winner = (fighter1.getHealth() > 0) ? fighter1 : fighter2;
+                            Character loser = (fighter1.getHealth() <= 0) ? fighter1 : fighter2;
+                            winner.incrementWins();
+
+                            // Eliminar al perdedor de la simulacion
+                            if (loser.getSeries().equalsIgnoreCase("Star Wars")) {
+                                this.getAdmin().getFirstStudio().registerLoser(loser);
+                                this.getAdmin().getFirstStudio().removeCharacter(loser);
+                            } else {
+                                this.getAdmin().getSecondStudio().registerLoser(loser);
+                                this.getAdmin().getSecondStudio().removeCharacter(loser);
+                            }
+                            
+                            Thread.sleep((long) ((this.getDuration() * 1000 * 0.3) * 0.6));
+
+                        } else if (aux > 0.40 && aux <= 0.67) {
+                            System.out.println("EMPATE: Ambos luchadores se encolan a la cola de NIVEL 1");
+                            Principal.getPrincipalInstance().getAnnouncerLabel().setText("EMPATE: Ambos luchadores se encolan a la cola de NIVEL 1");
+
+                            this.getAdmin().ReEnqueueFighter(fighter1, 1);
+                            this.getAdmin().ReEnqueueFighter(fighter2, 1);
+
+                            this.setLastWinner(null);
+                            Thread.sleep((long) ((this.getDuration() * 1000 * 0.3) * 0.6));
+
+                        } else {
+                            System.out.println("Sin Combate: Ambos luchadores han sido ingresados a la cola de refuerzo");
+                            Principal.getPrincipalInstance().getAnnouncerLabel().setText("Sin Combate: Ambos luchadores ingresan a la cola de refuerzo");
+                            Thread.sleep(this.getDuration() * 1000);
+
+                            this.getAdmin().reinforceFighter(fighter1);
+                            this.getAdmin().reinforceFighter(fighter2);
+                            this.setLastWinner(null);
+                        }
+
                     } else {
-                        System.out.println("No se pudieron obtener luchadores válidos.");
-                        this.setStatus("Waiting");
-                        // ACTUALIZAR ESTADO DE AI EN LA GUI
-                        Principal.getPrincipalInstance().getIAStatusLabel().setText("Waiting");
-                        this.semaphore.release();
-                        continue;
+                        this.handleMissingFighters();
                     }
 
+                    // Actualizar fighter UI
+                    // UI=>
+                    //Delegar trabajos
                     Thread.sleep(1000 * duration / 2);
                     this.setStatus("Announcing");
-                    // ACTUALIZAR ESTADO DE AI EN LA GUI
-                    Principal.getPrincipalInstance().getIAStatusLabel().setText("Announcing");
                     this.semaphore.release();
+                    Thread.sleep(100);
                 }
+            } catch (InterruptedException e) {
+                System.out.println("AIProcessor interrumpido: " + e.getMessage());
+                Thread.currentThread().interrupt();
             }
-        } catch (InterruptedException e) {
-            System.out.println("AIProcessor interrumpido: " + e.getMessage());
-            Thread.currentThread().interrupt();
         }
     }
 
-    private void processCombat(Character fighter1, Character fighter2) {
-        int outcome = isThereCombat(fighter1, fighter2);
-
-        if (outcome == 0) {
-            System.out.println("Combate entre " + fighter1.getName() + " y " + fighter2.getName());
-            // ACTUALIZAR ANUNCIADOR CON LA INFO DE LA BATALLA
-            Principal.getPrincipalInstance().getAnnouncerLabel().setText("Combate entre " + fighter1.getName() + " y " + fighter2.getName() + ".");
-
-            // MOSTRAR INFORMACION DE LOS PELEADORES (GUI)
-            this.updateFighterCardsUI(fighter1, fighter2);
-
-            Character first = determineInitiativeWinner(fighter1, fighter2);
-            Character second = (first == fighter1) ? fighter2 : fighter1;
-
-            // SETTEAR NUMERO DE ROUND EN LA ARENA
-            int roundCounter = 1;
-            Principal.getPrincipalInstance().getRoundCounterLabel().setText(String.valueOf(roundCounter));
-
-            while (fighter1.getHealth_pts() > 0 && fighter2.getHealth_pts() > 0) {
-                round(first, second, roundCounter);
-                roundCounter++;
-                System.out.println("Rondita : " + roundCounter);;
-            }
-
-            this.setStatus("Announcing");
-            Character winner = (fighter1.getHealth_pts() > 0) ? fighter1 : fighter2;
-            logWinner(winner);
-
-        } else if (outcome == 1) {
-            System.out.println("EMPATE: Ambos luchadores se encolan a la cola de NIVEL 1");
-            Principal.getPrincipalInstance().getAnnouncerLabel().setText("EMPATE: Ambos luchadores se encolan a la cola de NIVEL 1");
-
-            getAdmin().ReEnqueueFighter(fighter1, 0);
-            getAdmin().ReEnqueueFighter(fighter2, 0);
-            this.setStatus("Announcing");
-            this.setLastWinner(null);
-        } else if (outcome == 2) {
-            System.out.println("Sin Combate: Ambos luchadores han sido ingresados a la cola de refuerzo");
-            Principal.getPrincipalInstance().getAnnouncerLabel().setText("Sin Combate: Ambos luchadores ingresan a la cola de refuerzo");
-
-            getAdmin().reinforceFighter(fighter1);
-            getAdmin().reinforceFighter(fighter2);
-            this.setLastWinner(null);
-            this.setStatus("Announcing");
-        }
-
-    }
-
-    private int isThereCombat(Character fighter1, Character fighter2) {
-        fighter1.setStarvation_counter(0);
-        fighter2.setStarvation_counter(0);
-
-        int outCome = (int) (Math.random() * 100);
-
-        if (outCome < 40) {
-            return 0;
-
-        } else if (outCome < 67) { // 27% de empate
-
-            return 1;
-
-        } else {
-            return 2;
-        }
+    public void handleMissingFighters() {
     }
 
     private void updateFighterCardsUI(Character fighter1, Character fighter2) {
         // MOSTRAR ATRIBUTOS DE LOS PELEADORES
         // STAR WARS
-        Principal.getPrincipalInstance().getSwHPLabel().setText(String.valueOf(fighter1.getHealth_pts()));
-        Principal.getPrincipalInstance().getSwDefenseLabel().setText(String.valueOf(fighter1.getStrength_pts()));
-        Principal.getPrincipalInstance().getSwAgilityLabel().setText(String.valueOf(fighter1.getAttackModifier()));
+        Principal.getPrincipalInstance().getSwHPLabel().setText(String.valueOf(fighter1.getHealth()));
+        Principal.getPrincipalInstance().getSwDefenseLabel().setText(String.valueOf(fighter1.getStrength()));
+        Principal.getPrincipalInstance().getSwAgilityLabel().setText(String.valueOf(fighter1.getAgility()));
         Principal.getPrincipalInstance().getSwFighterNameLabel().setText(fighter1.getId());
         // STAR TREK
-        Principal.getPrincipalInstance().getStHPLabel().setText(String.valueOf(fighter2.getHealth_pts()));
-        Principal.getPrincipalInstance().getStDefenseLabel().setText(String.valueOf(fighter2.getStrength_pts()));
-        Principal.getPrincipalInstance().getStAgilityLabel().setText(String.valueOf(fighter2.getAttackModifier()));
+        Principal.getPrincipalInstance().getStHPLabel().setText(String.valueOf(fighter2.getHealth()));
+        Principal.getPrincipalInstance().getStDefenseLabel().setText(String.valueOf(fighter2.getStrength()));
+        Principal.getPrincipalInstance().getStAgilityLabel().setText(String.valueOf(fighter2.getAgility()));
         Principal.getPrincipalInstance().getStFighterNameLabel().setText(fighter2.getId());
         // INSERTAR IMAGENES DE LOS LUCHADORES
         ImagesManager IMGManager = Principal.getPrincipalInstance().getImagesManager();
         // Para star wars
-        ImageIcon starWarsIcon = IMGManager.reScaleImage(fighter1.getCharacterImage(), 204, 214); // se redimensiona la imagen
+        ImageIcon starWarsIcon = IMGManager.reScaleImage(fighter1.getCharacterImage(), 196, 237); // se redimensiona la imagen
         Principal.getPrincipalInstance().getSWImageLabel().setIcon(starWarsIcon);
         // Para star trek
-        ImageIcon starTrekIcon = IMGManager.reScaleImage(fighter2.getCharacterImage(), 204, 214); // se redimensiona la imagen
+        ImageIcon starTrekIcon = IMGManager.reScaleImage(fighter2.getCharacterImage(), 196, 237); // se redimensiona la imagen
         Principal.getPrincipalInstance().getSTImageLabel().setIcon(starTrekIcon);
     }
 
@@ -226,22 +215,6 @@ public class AIProcessor extends Thread {
 
     public void setAdmin(Administrator admin) {
         this.admin = admin;
-    }
-
-    public Studio getStarWarsStudio() {
-        return starWarsStudio;
-    }
-
-    public void setStarWarsStudio(Studio starWarsStudio) {
-        this.starWarsStudio = starWarsStudio;
-    }
-
-    public Studio getStarTrekStudio() {
-        return starTrekStudio;
-    }
-
-    public void setStarTrekStudio(Studio starTrekStudio) {
-        this.starTrekStudio = starTrekStudio;
     }
 
     public Semaphore getSemaphore() {
@@ -298,6 +271,34 @@ public class AIProcessor extends Thread {
 
     public void setLastCombatRounds(int lastCombatRounds) {
         this.lastCombatRounds = lastCombatRounds;
+    }
+
+    /**
+     * @return the starWarsPlayer
+     */
+    public Character getStarWarsPlayer() {
+        return starWarsPlayer;
+    }
+
+    /**
+     * @param starWarsPlayer the starWarsPlayer to set
+     */
+    public void setStarWarsPlayer(Character starWarsPlayer) {
+        this.starWarsPlayer = starWarsPlayer;
+    }
+
+    /**
+     * @return the starTrekPlayer
+     */
+    public Character getStarTrekPlayer() {
+        return starTrekPlayer;
+    }
+
+    /**
+     * @param starTrekPlayer the starTrekPlayer to set
+     */
+    public void setStarTrekPlayer(Character starTrekPlayer) {
+        this.starTrekPlayer = starTrekPlayer;
     }
 
 }

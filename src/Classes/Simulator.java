@@ -42,21 +42,21 @@ public class Simulator extends Thread {
             Character character2 = getSecondStudio().createAndEnqueueCharacter();
         }
 
-        System.out.println("Personaje creado para el estudio: " + this.getFirstStudio().getStudioLabel());
-        for (int i = 0; i < this.getFirstStudio().getChr_list().getSize(); i++) {
-            Character starChar = this.getFirstStudio().getChr_list().getValueByIndex(i);
-            System.out.println("ID: " + starChar.getId() + "\nNombre: " + starChar.getName() + "\nPrioridad: " + starChar.getPrio_level());
-        }
-
-        System.out.println("COLAS DE PRIORIDAD:\n    Cola 0 size: " + this.getFirstStudio().getPrior0_queue().getSize() + "\n    Cola 1 size: " + this.getFirstStudio().getPrior1_queue().getSize() + "\n    Cola 2 size: " + this.getFirstStudio().getPrior2_queue().getSize());
-
-        System.out.println("Personaje creado para el estudio: " + this.getSecondStudio().getStudioLabel());
-        for (int i = 0; i < this.getSecondStudio().getChr_list().getSize(); i++) {
-            Character starChar = this.getSecondStudio().getChr_list().getValueByIndex(i);
-            System.out.println("ID: " + starChar.getId() + "\nNombre: " + starChar.getName() + "\nPrioridad: " + starChar.getPrio_level());
-        }
-
-        System.out.println("COLAS DE PRIORIDAD:\n    Cola 0 size: " + this.getSecondStudio().getPrior0_queue().getSize() + "\n    Cola 1 size: " + this.getSecondStudio().getPrior1_queue().getSize() + "\n    Cola 2 size: " + this.getSecondStudio().getPrior2_queue().getSize());
+//        System.out.println("Personaje creado para el estudio: " + this.getFirstStudio().getStudioLabel());
+//        for (int i = 0; i < this.getFirstStudio().getChr_list().getSize(); i++) {
+//            Character starChar = this.getFirstStudio().getChr_list().getValueByIndex(i);
+//            System.out.println("ID: " + starChar.getId() + "\nNombre: " + starChar.getName() + "\nPrioridad: " + starChar.getPrio_level());
+//        }
+//
+//        System.out.println("COLAS DE PRIORIDAD:\n    Cola 0 size: " + this.getFirstStudio().getPrior0_queue().getSize() + "\n    Cola 1 size: " + this.getFirstStudio().getPrior1_queue().getSize() + "\n    Cola 2 size: " + this.getFirstStudio().getPrior2_queue().getSize());
+//
+//        System.out.println("Personaje creado para el estudio: " + this.getSecondStudio().getStudioLabel());
+//        for (int i = 0; i < this.getSecondStudio().getChr_list().getSize(); i++) {
+//            Character starChar = this.getSecondStudio().getChr_list().getValueByIndex(i);
+//            System.out.println("ID: " + starChar.getId() + "\nNombre: " + starChar.getName() + "\nPrioridad: " + starChar.getPrio_level());
+//        }
+//
+//        System.out.println("COLAS DE PRIORIDAD:\n    Cola 0 size: " + this.getSecondStudio().getPrior0_queue().getSize() + "\n    Cola 1 size: " + this.getSecondStudio().getPrior1_queue().getSize() + "\n    Cola 2 size: " + this.getSecondStudio().getPrior2_queue().getSize());
 
         // INICIALIZAR IMAGENES DE LAS COLAS (PERSONAJES) EN LA GUI
         Principal.getPrincipalInstance().updateQueuesUI();

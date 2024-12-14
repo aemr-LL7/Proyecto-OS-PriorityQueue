@@ -20,119 +20,135 @@ public class Studio {
     private int idCounter;
 
     //Queue section
-    private SimpleList<Character> chr_list;
-    private OurQueue<Character> prior0_queue;
+    private SimpleList<Character> losers_list;
     private OurQueue<Character> prior1_queue;
     private OurQueue<Character> prior2_queue;
+    private OurQueue<Character> prior3_queue;
     private OurQueue<Character> reinforcement_queue;
 
     public Studio(String studioLabel) {
         this.studioLabel = studioLabel;
-        this.prior0_queue = new OurQueue<>();
-        this.prior1_queue = new OurQueue<>();
-        this.prior2_queue = new OurQueue<>();
-        this.reinforcement_queue = new OurQueue();
-        this.chr_list = new SimpleList(); // Inicializa la lista de personajes
+        this.prior1_queue = new OurQueue<Character>();
+        this.prior2_queue = new OurQueue<Character>();
+        this.prior3_queue = new OurQueue<Character>();
+        this.reinforcement_queue = new OurQueue<Character>();
+        this.losers_list = new SimpleList<Character>(); // Inicializa la lista de personajes
         this.idCounter = 0;
     }
+        
+    // Estado actual de las colas
+    public void printQueueStatus() {
+        System.out.println("Estado de las colas para el estudio: " + this.getStudioLabel());
+        System.out.println("Prioridad 1: " + this.getPrior1_queue().getSize() + " personajes.");
+        System.out.println("Prioridad 2: " + this.getPrior2_queue().getSize() + " personajes.");
+        System.out.println("Prioridad 3: " + this.getPrior3_queue().getSize() + " personajes.");
+        System.out.println("Refuerzo: " + this.getReinforcement_queue().getSize() + " personajes.");
+    }
 
-    public Character createAndEnqueueCharacter() {
+    public void createAndEnqueueCharacter() {
         String characterId = this.getStudioLabel().replace(" ", "") + "-" + this.idCounter++; // Crea un ID unico para el personaje
         Character newCharacter = new Character(characterId, this.getStudioLabel());
 
         // Asigna una imagen única del Star Wars o Star Trek y a su vez el nombre del personaje
         Principal.getPrincipalInstance().getImagesManager().assignImage(newCharacter, this.getStudioLabel().equalsIgnoreCase("Star Wars") ? "./src/GUI/Assets/StarWars" : "./src/GUI/Assets/StarTrek");
 
-        this.getChr_list().addAtTheEnd(newCharacter); // Agrega el personaje a la lista de personajes disponibles
-
-        int charPrio = newCharacter.getPrio_level();
+        int charPrio = newCharacter.getPriorityLevel();
+        
+//        newCharacter.printCHRAttribs();
 
         switch (charPrio) {
-            case 0:
-                this.getPrior0_queue().insert(newCharacter);
-                break;
             case 1:
                 this.getPrior1_queue().insert(newCharacter);
                 break;
             case 2:
                 this.getPrior2_queue().insert(newCharacter);
                 break;
-            default:
+            case 3:
+                this.getPrior3_queue().insert(newCharacter);
                 break;
+            default:
+                System.out.println("Nivel de prioridad no valido para: " + newCharacter.getName());
         }
-
-        return newCharacter;
     }
 
     //Implementar borrar personaje en algun momento de la lista, el personaje esta fuera de la simulacion al estar fuera de las colas.
     public void removeCharacter(Character characterToRemove) {
         // Intentar eliminar de la lista de personajes
-        if (!chr_list.isEmpty()) {
-            chr_list.delete(characterToRemove);
-            System.out.println("Removed character from character list: " + characterToRemove);
+        if (!losers_list.isEmpty()) {
+            getLosers_list().delete(characterToRemove);
+            System.out.println("Un personaje ha sido eliminado de la simulacion: " + characterToRemove);
         } else {
-            System.out.println("Character not found in character list: " + characterToRemove);
+            System.out.println("Personaje no enocntrado en la lista de personajes: " + characterToRemove);
         }
     }
 
-    public void starvationUpdate() {
-        for (int i = 0; i < chr_list.getSize(); i++) {
-            Character character = chr_list.getValueByIndex(i); // Obtiene el personaje en la pos i
-            character.incrementStarvationCounter(); // Incrementa el contador de inanicion
+    public void updateReinforcementQueue() {
+        if (!this.reinforcement_queue.isEmpty()) {
+            Character actualCharacter = getReinforcement_queue().pop();
+            double probability = Math.random();
 
-            // Verifica si el contador ha llegado a 8
-            if (character.getStarvation_counter() >= 8 && !character.isIsReinforced()) {
-                // Reinicia el contador
-                character.resetStarvationCounter();
-
-                // Cambia la prioridad del personaje
-                if (character.getPrio_level() > 0) { // Si no es de prioridad 1
-
-                    this.moveCharUpPrio(character); //Movemos el personaje
-
-                }
-
-            } else if (character.getStarvation_counter() >= 8 && character.isIsReinforced()) {
-
-                // Reinicia el contador
-                character.resetStarvationCounter();
-
-                //Eliminar flag de refuerzo
-                character.setIsReinforced(false);
-
-                if (character.getPrio_level() == 0) {
-                    this.getPrior0_queue().insert(character);//Mover una cola arriba por mecanica de starvation normal
-
-                } else if (character.getPrio_level() == 1) {
-                    this.getPrior0_queue().insert(character);
-
-                } else if (character.getPrio_level() == 2) {
-                    this.getPrior1_queue().insert(character);
-
-                }
-
-                this.getReinforcement_queue().remove(character);//Eliminar de la cola de refuerzo
-
+            if (probability <= 0.4) {
+                // Mover a la cola de prioridad 1
+                this.getPrior1_queue().insert(actualCharacter);
+                actualCharacter.setPriorityLevel(1);
+                actualCharacter.setIsReinforced(false);
+                System.out.println(actualCharacter.getName() + " ha sido promovido a prioridad 1.");
+            } else {
+                // Mover al final de la cola de refuerzo
+                actualCharacter.setIsReinforced(true);
+                this.getReinforcement_queue().insert(actualCharacter);
+                System.out.println(actualCharacter.getName() + " permanece en la cola de refuerzo.");
             }
         }
     }
 
-    private void moveCharUpPrio(Character character) {
-        if (character.getPrio_level() > 0) { // Si no es de prioridad 1
-            int charPrio = character.getPrio_level();
+    //Actualizar las prioridades de los personajes según las reglas de inanición.
+    public void updateStarvationCounters() {
+        updateQueueStarvation(this.getPrior2_queue(), 2);
+        updateQueueStarvation(this.getPrior3_queue(), 3);
+    }
 
-            if (charPrio == 1) {
-                this.getPrior0_queue().insert(character);//Mover a la siguiente cola
-                this.getPrior1_queue().remove(character);//Eliminar de la cola anterior
+    private void updateQueueStarvation(OurQueue<Character> queue, int priorityLevel) {
+        int size = queue.getSize();
+        for (int i = 0; i < size; i++) {
+            Character actualCharacter = queue.pop();
 
-            } else if (charPrio == 2) {
-                this.getPrior1_queue().insert(character);
-                this.getPrior2_queue().remove(character);//Eliminar de la cola anterior
+            actualCharacter.incrementStarvationCounter();
+            if (actualCharacter.getStarvation_counter() >= 8) {
+                actualCharacter.resetStarvationCounter();
+                actualCharacter.setPriorityLevel(priorityLevel - 1);
+
+                if (priorityLevel == 3) {
+                    this.getPrior2_queue().insert(actualCharacter);
+                    System.out.println(actualCharacter.getName() + " ha sido promovido a prioridad 2 debido a inanicion");
+                } else if (priorityLevel == 2) {
+                    this.getPrior1_queue().insert(actualCharacter);
+                    System.out.println(actualCharacter.getName() + " ha sido promovido a prioridad 1 debido a inanición.");
+                }
+            } else {
+                // Volver a añadir al personaje en su cola correspondiente en la ultima posicion
+                queue.insert(actualCharacter);
             }
-
-            character.setPrio_level(character.getPrio_level() - 1); // actualizamos el prio en el personaje
-
         }
+    }
+    
+    public Character getNextCharacterForBattle() {
+        if (!this.prior1_queue.isEmpty()) {
+            return this.prior1_queue.pop();
+        } else if (!this.prior2_queue.isEmpty()) {
+            return this.prior2_queue.pop();
+        } else if (!this.prior3_queue.isEmpty()) {
+            return this.prior3_queue.pop();
+        } else {
+            System.out.println("No hay personajes disponibles en las colas de prioridad para el estudio " + this.studioLabel);
+            return null;
+        }
+    }
+    
+    // Registrar un perdedor en la lista de perdedores.
+    public void registerLoser(Character loserCharacter) {
+        this.getLosers_list().addAtTheEnd(loserCharacter);
+        System.out.println(loserCharacter.getName() + " ha sido enviado a la lista de Perdedores");
     }
 
     /**
@@ -150,73 +166,31 @@ public class Studio {
     }
 
     /**
-     * @return the idCounter
+     * @return the losers_list
      */
-    public int getIdCounter() {
-        return idCounter;
-    }
-
-    /**
-     * @param idCounter the idCounter to set
-     */
-    public void setIdCounter(int idCounter) {
-        this.idCounter = idCounter;
-    }
-
-    /**
-     * @return the chr_list
-     */
-    public SimpleList<Character> getChr_list() {
-        return chr_list;
-    }
-
-    /**
-     * @param chr_list the chr_list to set
-     */
-    public void setChr_list(SimpleList<Character> chr_list) {
-        this.chr_list = chr_list;
-    }
-
-    /**
-     * @return the prior0_queue
-     */
-    public OurQueue getPrior0_queue() {
-        return prior0_queue;
-    }
-
-    /**
-     * @param prior1_queue the prior0_queue to set
-     */
-    public void setPrior0_queue(OurQueue prior1_queue) {
-        this.prior0_queue = prior1_queue;
+    public SimpleList<Character> getLosers_list() {
+        return losers_list;
     }
 
     /**
      * @return the prior1_queue
      */
-    public OurQueue getPrior1_queue() {
+    public OurQueue<Character> getPrior1_queue() {
         return prior1_queue;
-    }
-
-    /**
-     * @param prior2_queue the prior1_queue to set
-     */
-    public void setPrior1_queue(OurQueue prior2_queue) {
-        this.prior1_queue = prior2_queue;
     }
 
     /**
      * @return the prior2_queue
      */
-    public OurQueue getPrior2_queue() {
+    public OurQueue<Character> getPrior2_queue() {
         return prior2_queue;
     }
 
     /**
-     * @param prior3_queue the prior2_queue to set
+     * @return the prior3_queue
      */
-    public void setPrior2_queue(OurQueue prior3_queue) {
-        this.prior2_queue = prior3_queue;
+    public OurQueue<Character> getPrior3_queue() {
+        return prior3_queue;
     }
 
     /**
@@ -225,12 +199,7 @@ public class Studio {
     public OurQueue<Character> getReinforcement_queue() {
         return reinforcement_queue;
     }
-
-    /**
-     * @param reinforcement_queue the reinforcement_queue to set
-     */
-    public void setReinforcement_queue(OurQueue reinforcement_queue) {
-        this.reinforcement_queue = reinforcement_queue;
-    }
+    
+    
 
 }

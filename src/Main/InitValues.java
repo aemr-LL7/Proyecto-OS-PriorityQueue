@@ -20,19 +20,21 @@ public class InitValues {
 
         Studio starWarsStudios = new Studio("Star Wars");
         Studio starTrekStudios = new Studio("Star Trek");
-        Administrator admin = new Administrator(starWarsStudios, starTrekStudios);
-        app.setAdmin(admin);
+        
         app.setIa(new AIProcessor());
+        Administrator admin = new Administrator(starWarsStudios, starTrekStudios, app.getSemaphore(), app.getIa());
+        app.setAdmin(admin);
+        app.getAdmin().getAI().setAdmin(admin);
 
-        Simulator simulation = new Simulator(app.getIa(), app.getAdmin(), app.getSemaphore());
-
-        app.setSimulation(simulation);
-        app.getSimulation().getAI().setAdmin(admin);
-        app.getSimulation().setFirstStudio(starWarsStudios);
-        app.getSimulation().setSecondStudio(starTrekStudios);
+//        Simulator simulation = new Simulator(app.getIa(), app.getAdmin(), app.getSemaphore());
+//
+//        app.setSimulation(simulation);
+//        app.getSimulation().getAI().setAdmin(admin);
+//        app.getSimulation().setFirstStudio(starWarsStudios);
+//        app.getSimulation().setSecondStudio(starTrekStudios);
 
         // Iniciar simulacion (crear personajes)
-        app.getSimulation().initializeSimulation();
+        app.getAdmin().initializeSimulation();
 
     }
 }

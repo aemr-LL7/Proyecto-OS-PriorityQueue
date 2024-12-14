@@ -20,10 +20,9 @@ public class App {
 
     private static Semaphore semaphore = new Semaphore(1);
     private static int battleDuration = 10;
-    private static Simulator simulation;
+    // private static Simulator simulation;
     private static Administrator admin;
     private static AIProcessor ia;
-
 
     // Retorna instancia unica de la app
     public static synchronized App getInstance() {
@@ -37,8 +36,7 @@ public class App {
         // COMENZAR LA SIMULACION DEL PROGRAMA
         InitValues.initializeParams();
     }
-    
-    
+
     public static Administrator getAdmin() {
         return admin;
     }
@@ -69,14 +67,6 @@ public class App {
 
     public static void setBattleDuration(int battleDuration) {
         App.battleDuration = battleDuration;
-    }
-
-    public static Simulator getSimulation() {
-        return simulation;
-    }
-
-    public static void setSimulation(Simulator simulation) {
-        App.simulation = simulation;
     }
 
     public static AIProcessor getIa() {

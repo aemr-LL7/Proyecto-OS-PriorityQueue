@@ -4,85 +4,123 @@
  */
 package Classes;
 
+import GUI.Principal;
 import java.util.Random;
 import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author andre
  */
-public class Administrator {
+public class Administrator extends Thread {
 
     private Studio firstStudio; // Star Wars
     private Studio secondStudio; // Star Trek
-    private static double NEW_CHAR_PROB = 0.8;
+    private final Semaphore semaphore;
+    private AIProcessor AI;
+    private int numRound = 0;
 
-    public Administrator(Studio studioStarWars, Studio studioStarTrek) {
+    public Administrator(Studio studioStarWars, Studio studioStarTrek, Semaphore mutex, AIProcessor ai) {
         this.firstStudio = studioStarWars;
         this.secondStudio = studioStarTrek;
+        this.semaphore = mutex;
+        this.AI = ai;
     }
 
-    // Proveer peleador a AIProcessor para combate
-    public Character provideFighter(String studioName) {
-        Studio studioContext = (studioName.equalsIgnoreCase("Star Wars")) ? firstStudio : secondStudio;
-        return selectFighter(studioContext);
+    public void initializeSimulation() {
+        // Creación de los personajes iniciales y asignacion de colas correspondientes (STUDIO)
+        System.out.println("Iniciando la creación de personajes...");
+        for (int i = 0; i < 20; i++) {
+            getFirstStudio().createAndEnqueueCharacter();
+            getSecondStudio().createAndEnqueueCharacter();
+        }
+
+        // INICIALIZAR IMAGENES DE LAS COLAS (PERSONAJES) EN LA GUI
+        Principal.getPrincipalInstance().updateQueuesUI();
+        // INICIAR VENTANA ARENA
+        Principal.getPrincipalInstance().setVisible(true);
+
+        try {
+            this.semaphore.acquire();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Administrator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        // Iniciar hilos
+        this.start();
+        this.getAI().start();
     }
 
-    // Seleccionador de personaje para la pelea por estudio
-    public Character selectFighter(Studio studio) {
-        if (!studio.getPrior0_queue().isEmpty()) {
-            return (Character) studio.getPrior0_queue().pop();
-        }
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                this.firstStudio.printQueueStatus();
+                this.secondStudio.printQueueStatus();
 
-        if (!studio.getPrior1_queue().isEmpty()) {
-            return (Character) studio.getPrior1_queue().pop();
-        }
+                // Actualizar colas de refuerzo
+                this.firstStudio.updateReinforcementQueue();
+                this.secondStudio.updateReinforcementQueue();
 
-        if (!studio.getPrior2_queue().isEmpty()) {
-            return (Character) studio.getPrior2_queue().pop();
-        }
+                // Chequear dos ciclos de revision para crear nuevos personajes
+                if (this.numRound == 2) {
+                    this.addNewCharToQueues();
+                    this.numRound = 0;
+                }
 
-        return null;
+                // Pasar los personajes seleccionados a la IA
+                Character newSTARWARSFighter = getFirstStudio().getNextCharacterForBattle();
+                Character newSTARTREKFighter = getSecondStudio().getNextCharacterForBattle();
+
+                this.getAI().setStarWarsPlayer(newSTARWARSFighter);
+                this.getAI().setStarTrekPlayer(newSTARTREKFighter);
+
+                // Actualizar las colas en la UI
+                //=> UI
+                this.semaphore.release();
+                Thread.sleep(1000);
+                this.semaphore.acquire();
+
+                this.numRound += 1;
+
+                // Subir las prioridades de los personajes en colas mas bajas
+                this.getFirstStudio().updateStarvationCounters();
+                this.getSecondStudio().updateStarvationCounters();
+
+                // ACtualizar nuevamente la UI de colas
+                //=> UI
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Administrator.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
-    // Elimina un personaje de las colas de prioridad de su estudio
-    public void removeFighter(Character character) {
-        Studio studioContext = (character.getSeries().equals("Star Wars")) ? firstStudio : secondStudio;
-
-        int priorityLevel = character.getPrio_level();
-
-        switch (priorityLevel) {
-            case 0:
-                studioContext.getPrior0_queue().remove(character);
-                break;
-            case 1:
-                studioContext.getPrior1_queue().remove(character);
-                break;
-            case 2:
-                studioContext.getPrior2_queue().remove(character);
-                break;
-            default:
-                System.out.println("El personaje no tiene un nivel de prioridad valido!");
+    private void addNewCharToQueues() {
+        double randomNum = Math.random();
+        if (randomNum <= 0.8) {
+            // Agregar personajes a las colas de prioridad según su nivel inicial
+            this.getFirstStudio().createAndEnqueueCharacter();
+            this.getSecondStudio().createAndEnqueueCharacter();
         }
-
-        System.out.println("-- Personaje " + character.getName() + " ID:" + character.getId() + " fue eliminado de la simulacion --");
     }
 
     // Reencolar un character en la cola de prioridad especificada
     public void ReEnqueueFighter(Character character, int priorityLevel) {
         Studio studioContext = (character.getSeries().equals("Star Wars")) ? firstStudio : secondStudio;
 
-        character.setPrio_level(priorityLevel);
+        character.setPriorityLevel(priorityLevel);
 
         switch (priorityLevel) {
-            case 0:
-                studioContext.getPrior0_queue().insert(character);
-                break;
             case 1:
                 studioContext.getPrior1_queue().insert(character);
                 break;
             case 2:
                 studioContext.getPrior2_queue().insert(character);
+                break;
+            case 3:
+                studioContext.getPrior3_queue().insert(character);
                 break;
             default:
                 System.out.println("El nivel de prioridad especificado no es valido!");
@@ -100,81 +138,116 @@ public class Administrator {
 
         System.out.println("Personaje " + character.getName() + " ID:" + character.getId() + " enviado a la Cola de Refuerzo.");
     }
-
-    public void updateQueues(int cycleCounter) {
-
-        // Cada ciclo revisa los personajes en inanición y gestiona los personajes nuevos
-        this.handleStarvation(getFirstStudio());
-        this.handleStarvation(getSecondStudio());
-
-        // Cada dos ciclos de revisión
-        if (cycleCounter % 2 == 0) {
-            int isTimeForNewChar = (int) (Math.random() * 101);
-
-            if (isTimeForNewChar < 80) {
-                this.addNewCharToQueues();
-            }
-
-        }
-        
-        //refuerzo
-        reinforceQueueUpdate(getFirstStudio());
-        reinforceQueueUpdate(getSecondStudio());
-    }
-
-    private void reinforceQueueUpdate(Studio studio) {
-
-        if (!studio.getReinforcement_queue().isEmpty()) {
-            Character reinforcement = studio.getReinforcement_queue().pop();
-            
-            int willReinforce = (int) (Math.random() * 101);
-
-            if (willReinforce < 40) {
-                studio.getPrior0_queue().insert(reinforcement);
-                reinforcement.setPrio_level(0);
-            } else {
-                studio.getReinforcement_queue().insert(reinforcement);
-            }
-        }
-    }
-
-    private void handleStarvation(Studio studio) {
-        // Invoca el metodo starvationUpdate de Studio para manejar la inanicion y update de prioridades
-        studio.starvationUpdate();
-    }
-
-    private void addNewCharToQueues() {
-        Random random = new Random();
-        if (random.nextDouble() < getNEW_CHAR_PROB()) {
-            Character newStarWarsChar = this.getFirstStudio().createAndEnqueueCharacter();
-            Character newStarTrekChar = this.getSecondStudio().createAndEnqueueCharacter();
-
-            // Agregar personajes a las colas de prioridad según su nivel inicial
-            this.insertCharByPriority(newStarWarsChar, this.getFirstStudio());
-            this.insertCharByPriority(newStarTrekChar, this.getSecondStudio());
-        }
-    }
-
-    private void insertCharByPriority(Character character, Studio studio) {
-        int priorityLevel = character.getPrio_level();
-
-        switch (priorityLevel) {
-            case 0: // Excepcional
-                studio.getPrior0_queue().insert(character);
-                System.out.println("Personaje " + character.getId() + " insertado en la Cola de Prioridad 1 (Excepcional)");
-                break;
-            case 1: // Promedio
-                studio.getPrior1_queue().insert(character);
-                System.out.println("Personaje " + character.getId() + " insertado en la Cola de Prioridad 2 (Promedio)");
-                break;
-            case 2: // Deficiente
-                studio.getPrior2_queue().insert(character);
-                System.out.println("Personaje " + character.getId() + " insertado en la Cola de Prioridad 3 (Deficiente)");
-                break;
-            default:
-                System.out.println("No se ha encontrado correctamente la prioridad del Personaje " + character.getId());
-        }
-    }
+    
+//
+//    // Proveer peleador a AIProcessor para combate
+//    public Character provideFighter(String studioName) {
+//        Studio studioContext = (studioName.equalsIgnoreCase("Star Wars")) ? firstStudio : secondStudio;
+//        return selectFighter(studioContext);
+//    }
+//
+//    // Seleccionador de personaje para la pelea por estudio
+//    public Character selectFighter(Studio studio) {
+//        if (!studio.getPrior0_queue().isEmpty()) {
+//            return (Character) studio.getPrior0_queue().pop();
+//        }
+//
+//        if (!studio.getPrior1_queue().isEmpty()) {
+//            return (Character) studio.getPrior1_queue().pop();
+//        }
+//
+//        if (!studio.getPrior2_queue().isEmpty()) {
+//            return (Character) studio.getPrior2_queue().pop();
+//        }
+//
+//        return null;
+//    }
+//
+//    // Elimina un personaje de las colas de prioridad de su estudio
+//    public void removeFighter(Character character) {
+//        Studio studioContext = (character.getSeries().equals("Star Wars")) ? firstStudio : secondStudio;
+//
+//        int priorityLevel = character.getPrio_level();
+//
+//        switch (priorityLevel) {
+//            case 0:
+//                studioContext.getPrior0_queue().remove(character);
+//                break;
+//            case 1:
+//                studioContext.getPrior1_queue().remove(character);
+//                break;
+//            case 2:
+//                studioContext.getPrior2_queue().remove(character);
+//                break;
+//            default:
+//                System.out.println("El personaje no tiene un nivel de prioridad valido!");
+//        }
+//
+//        System.out.println("-- Personaje " + character.getName() + " ID:" + character.getId() + " fue eliminado de la simulacion --");
+//    }
+//
+//
+//    public void updateQueues(int cycleCounter) {
+//
+//        // Cada ciclo revisa los personajes en inanición y gestiona los personajes nuevos
+//        this.handleStarvation(getFirstStudio());
+//        this.handleStarvation(getSecondStudio());
+//
+//        // Cada dos ciclos de revisión
+//        if (cycleCounter % 2 == 0) {
+//            int isTimeForNewChar = (int) (Math.random() * 101);
+//
+//            if (isTimeForNewChar < 80) {
+//                this.addNewCharToQueues();
+//            }
+//
+//        }
+//
+//        //refuerzo
+//        reinforceQueueUpdate(getFirstStudio());
+//        reinforceQueueUpdate(getSecondStudio());
+//    }
+//
+//    private void updateReinforcementQueue(Studio studio) {
+//
+//        if (!studio.getReinforcement_queue().isEmpty()) {
+//            Character reinforcement = studio.getReinforcement_queue().pop();
+//
+//            int willReinforce = (int) (Math.random() * 101);
+//
+//            if (willReinforce <= 40) {
+//                studio.getPrior0_queue().insert(reinforcement);
+//                reinforcement.setPrio_level(0);
+//            } else {
+//                studio.getReinforcement_queue().insert(reinforcement);
+//            }
+//        }
+//    }
+//
+//    private void handleStarvation(Studio studio) {
+//        // Invoca el metodo starvationUpdate de Studio para manejar la inanicion y update de prioridades
+//        studio.starvationUpdate();
+//    }
+//    private void insertCharByPriority(Character character, Studio studio) {
+//        int priorityLevel = character.getPrio_level();
+//
+//        switch (priorityLevel) {
+//            case 0: // Excepcional
+//                studio.getPrior0_queue().insert(character);
+//                System.out.println("Personaje " + character.getId() + " insertado en la Cola de Prioridad 1 (Excepcional)");
+//                break;
+//            case 1: // Promedio
+//                studio.getPrior1_queue().insert(character);
+//                System.out.println("Personaje " + character.getId() + " insertado en la Cola de Prioridad 2 (Promedio)");
+//                break;
+//            case 2: // Deficiente
+//                studio.getPrior2_queue().insert(character);
+//                System.out.println("Personaje " + character.getId() + " insertado en la Cola de Prioridad 3 (Deficiente)");
+//                break;
+//            default:
+//                System.out.println("No se ha encontrado correctamente la prioridad del Personaje " + character.getId());
+//        }
+//    }
 
     /**
      * @return the firstStudio
@@ -205,17 +278,17 @@ public class Administrator {
     }
 
     /**
-     * @return the NEW_CHAR_PROB
+     * @return the AI
      */
-    public static double getNEW_CHAR_PROB() {
-        return NEW_CHAR_PROB;
+    public AIProcessor getAI() {
+        return AI;
     }
 
     /**
-     * @param aNEW_CHAR_PROB the NEW_CHAR_PROB to set
+     * @param AI the AI to set
      */
-    public static void setNEW_CHAR_PROB(double aNEW_CHAR_PROB) {
-        NEW_CHAR_PROB = aNEW_CHAR_PROB;
+    public void setAI(AIProcessor AI) {
+        this.AI = AI;
     }
 
 }
