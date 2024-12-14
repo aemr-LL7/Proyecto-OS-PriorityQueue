@@ -49,7 +49,7 @@ public class AIProcessor extends Thread {
 
     private void roundFight(Character first, Character second, int roundCounter) {
         // ACTUALIZAR ANUNCIADOR (GUI)
-        System.out.println("inicia ronda: " + roundCounter + " " + first.getName() + " vs " + second.getName());
+        System.out.println("INICIA ROUND: " + roundCounter + " - " + first.getName() + " vs " + second.getName());
         Principal.getPrincipalInstance().getAnnouncerLabel().setText("INICIA RONDA: " + first.getName() + " vs " + second.getName());
 
         //Ataca el primer personaje.
@@ -92,16 +92,16 @@ public class AIProcessor extends Thread {
 //        winner.addWin();
 //
 //    }
-
     @Override
     public void run() {
         while (true) {
             try {
                 if (this.status.equals("Waiting")) {
-                    this.semaphore.acquire();
+                    this.getSemaphore().acquire();
                     this.setStatus("Deciding");
 
-                    this.round += 1;
+                    this.setRound(this.getRound() + 1);
+                    System.out.println("ROUND NUMERO "+this.getRound());
 
                     // Provisión de luchadores usando métodos centralizados
                     Character fighter1 = this.getStarWarsPlayer();
@@ -109,7 +109,7 @@ public class AIProcessor extends Thread {
 
                     if (fighter1 != null && fighter2 != null) {
                         // SETTEAR NUMERO DE ROUND EN LA ARENA
-                        Principal.getPrincipalInstance().getRoundCounterLabel().setText(String.valueOf(this.round));
+                        Principal.getPrincipalInstance().getRoundCounterLabel().setText(String.valueOf(this.getRound()));
 
                         double aux = Math.random();
 
@@ -125,11 +125,11 @@ public class AIProcessor extends Thread {
                             Character second = (first == fighter1) ? fighter2 : fighter1;
 
                             while (fighter1.getHealth() > 0 && fighter2.getHealth() > 0) {
-                                this.roundFight(first, second, this.round);
-                                System.out.println("Rondita : " + this.round);
+                                this.roundFight(first, second, this.getRound());
+                                //System.out.println("Rondita : " + this.getRound());
                             }
 
-                            this.setStatus("Announcing");
+                            //this.setStatus("Announcing");
                             Character winner = (fighter1.getHealth() > 0) ? fighter1 : fighter2;
                             Character loser = (fighter1.getHealth() <= 0) ? fighter1 : fighter2;
                             winner.incrementWins();
@@ -142,7 +142,7 @@ public class AIProcessor extends Thread {
                                 this.getAdmin().getSecondStudio().registerLoser(loser);
                                 this.getAdmin().getSecondStudio().removeCharacter(loser);
                             }
-                            
+
                             Thread.sleep((long) ((this.getDuration() * 1000 * 0.3) * 0.6));
 
                         } else if (aux > 0.40 && aux <= 0.67) {
@@ -169,12 +169,13 @@ public class AIProcessor extends Thread {
                         this.handleMissingFighters();
                     }
 
-                    // Actualizar fighter UI
+                    // Renovar fighter UI
                     // UI=>
+                    this.clearFighterCardsUI();
                     //Delegar trabajos
-                    Thread.sleep(1000 * duration / 2);
+                    Thread.sleep(1000 * this.getDuration() / 2);
                     this.setStatus("Announcing");
-                    this.semaphore.release();
+                    this.getSemaphore().release();
                     Thread.sleep(100);
                 }
             } catch (InterruptedException e) {
@@ -208,6 +209,27 @@ public class AIProcessor extends Thread {
         ImageIcon starTrekIcon = IMGManager.reScaleImage(fighter2.getCharacterImage(), 196, 237); // se redimensiona la imagen
         Principal.getPrincipalInstance().getSTImageLabel().setIcon(starTrekIcon);
     }
+    
+    
+    private void clearFighterCardsUI() {
+        Principal.getPrincipalInstance().getIAStatusLabel().setText("Esperando nueva selección de personajes...");
+        Principal.getPrincipalInstance().getWinnerLabel().setText("[...]");
+        
+        // STAR WARS
+        Principal.getPrincipalInstance().getSWImageLabel().setIcon(null);
+        Principal.getPrincipalInstance().getSwFighterNameLabel().setText("Pendiente...");
+        Principal.getPrincipalInstance().getSwHPLabel().setText("0");
+        Principal.getPrincipalInstance().getSwDefenseLabel().setText("0");
+        Principal.getPrincipalInstance().getSwAgilityLabel().setText("0");
+
+        // STAR TREK
+        Principal.getPrincipalInstance().getSTImageLabel().setIcon(null);
+        Principal.getPrincipalInstance().getStFighterNameLabel().setText("Pendiente...");
+        Principal.getPrincipalInstance().getStHPLabel().setText("0");
+        Principal.getPrincipalInstance().getStDefenseLabel().setText("0");
+        Principal.getPrincipalInstance().getStAgilityLabel().setText("0");
+
+    }
 
     public Administrator getAdmin() {
         return admin;
@@ -215,14 +237,6 @@ public class AIProcessor extends Thread {
 
     public void setAdmin(Administrator admin) {
         this.admin = admin;
-    }
-
-    public Semaphore getSemaphore() {
-        return semaphore;
-    }
-
-    public void setSemaphore(Semaphore semaphore) {
-        this.semaphore = semaphore;
     }
 
     public String getStatus() {
@@ -299,6 +313,34 @@ public class AIProcessor extends Thread {
      */
     public void setStarTrekPlayer(Character starTrekPlayer) {
         this.starTrekPlayer = starTrekPlayer;
+    }
+
+    /**
+     * @return the round
+     */
+    public int getRound() {
+        return round;
+    }
+
+    /**
+     * @param round the round to set
+     */
+    public void setRound(int round) {
+        this.round = round;
+    }
+
+    /**
+     * @return the semaphore
+     */
+    public Semaphore getSemaphore() {
+        return semaphore;
+    }
+
+    /**
+     * @param semaphore the semaphore to set
+     */
+    public void setSemaphore(Semaphore semaphore) {
+        this.semaphore = semaphore;
     }
 
 }

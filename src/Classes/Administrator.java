@@ -5,6 +5,7 @@
 package Classes;
 
 import GUI.Principal;
+import Main.App;
 import java.util.Random;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
@@ -18,7 +19,7 @@ public class Administrator extends Thread {
 
     private Studio firstStudio; // Star Wars
     private Studio secondStudio; // Star Trek
-    private final Semaphore semaphore;
+    private Semaphore semaphore;
     private AIProcessor AI;
     private int numRound = 0;
 
@@ -43,7 +44,7 @@ public class Administrator extends Thread {
         Principal.getPrincipalInstance().setVisible(true);
 
         try {
-            this.semaphore.acquire();
+            this.getSemaphore().acquire();
         } catch (InterruptedException ex) {
             Logger.getLogger(Administrator.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -57,6 +58,8 @@ public class Administrator extends Thread {
     public void run() {
         while (true) {
             try {
+                System.out.println("DURACION BATALLAS: " + this.getAI().getDuration());
+
                 this.firstStudio.printQueueStatus();
                 this.secondStudio.printQueueStatus();
 
@@ -65,9 +68,9 @@ public class Administrator extends Thread {
                 this.secondStudio.updateReinforcementQueue();
 
                 // Chequear dos ciclos de revision para crear nuevos personajes
-                if (this.numRound == 2) {
+                if (this.getNumRound() == 2) {
                     this.addNewCharToQueues();
-                    this.numRound = 0;
+                    this.setNumRound(0);
                 }
 
                 // Pasar los personajes seleccionados a la IA
@@ -79,11 +82,12 @@ public class Administrator extends Thread {
 
                 // Actualizar las colas en la UI
                 //=> UI
-                this.semaphore.release();
-                Thread.sleep(1000);
-                this.semaphore.acquire();
+                Principal.getPrincipalInstance().updateQueuesUI();
+                this.getSemaphore().release();
+                Thread.sleep(100);
+                this.getSemaphore().acquire();
 
-                this.numRound += 1;
+                this.setNumRound(this.getNumRound() + 1);
 
                 // Subir las prioridades de los personajes en colas mas bajas
                 this.getFirstStudio().updateStarvationCounters();
@@ -91,6 +95,8 @@ public class Administrator extends Thread {
 
                 // ACtualizar nuevamente la UI de colas
                 //=> UI
+                Principal.getPrincipalInstance().updateQueuesUI();
+
             } catch (InterruptedException ex) {
                 Logger.getLogger(Administrator.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -138,7 +144,7 @@ public class Administrator extends Thread {
 
         System.out.println("Personaje " + character.getName() + " ID:" + character.getId() + " enviado a la Cola de Refuerzo.");
     }
-    
+
 //
 //    // Proveer peleador a AIProcessor para combate
 //    public Character provideFighter(String studioName) {
@@ -248,7 +254,6 @@ public class Administrator extends Thread {
 //                System.out.println("No se ha encontrado correctamente la prioridad del Personaje " + character.getId());
 //        }
 //    }
-
     /**
      * @return the firstStudio
      */
@@ -289,6 +294,34 @@ public class Administrator extends Thread {
      */
     public void setAI(AIProcessor AI) {
         this.AI = AI;
+    }
+
+    /**
+     * @return the numRound
+     */
+    public int getNumRound() {
+        return numRound;
+    }
+
+    /**
+     * @param numRound the numRound to set
+     */
+    public void setNumRound(int numRound) {
+        this.numRound = numRound;
+    }
+
+    /**
+     * @return the semaphore
+     */
+    public Semaphore getSemaphore() {
+        return semaphore;
+    }
+
+    /**
+     * @param semaphore the semaphore to set
+     */
+    public void setSemaphore(Semaphore semaphore) {
+        this.semaphore = semaphore;
     }
 
 }
