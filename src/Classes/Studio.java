@@ -35,7 +35,7 @@ public class Studio {
         this.losers_list = new SimpleList<Character>(); // Inicializa la lista de personajes
         this.idCounter = 0;
     }
-        
+
     // Estado actual de las colas
     public void printQueueStatus() {
         System.out.println("Estado de las colas para el estudio: " + this.getStudioLabel());
@@ -43,6 +43,11 @@ public class Studio {
         System.out.println("Prioridad 2: " + this.getPrior2_queue().getSize() + " personajes.");
         System.out.println("Prioridad 3: " + this.getPrior3_queue().getSize() + " personajes.");
         System.out.println("Refuerzo: " + this.getReinforcement_queue().getSize() + " personajes.");
+    }
+
+    public boolean areAllQueuesEmpty() {
+        return this.prior1_queue.isEmpty() && this.prior2_queue.isEmpty() && this.prior3_queue.isEmpty()
+                && reinforcement_queue.isEmpty();
     }
 
     public void createAndEnqueueCharacter() {
@@ -53,9 +58,8 @@ public class Studio {
         Principal.getPrincipalInstance().getImagesManager().assignImage(newCharacter, this.getStudioLabel().equalsIgnoreCase("Star Wars") ? "./src/GUI/Assets/StarWars" : "./src/GUI/Assets/StarTrek");
 
         int charPrio = newCharacter.getPriorityLevel();
-        
-//        newCharacter.printCHRAttribs();
 
+//        newCharacter.printCHRAttribs();
         switch (charPrio) {
             case 1:
                 this.getPrior1_queue().insert(newCharacter);
@@ -131,7 +135,7 @@ public class Studio {
             }
         }
     }
-    
+
     public Character getNextCharacterForBattle() {
         if (!this.prior1_queue.isEmpty()) {
             return this.prior1_queue.pop();
@@ -144,7 +148,7 @@ public class Studio {
             return null;
         }
     }
-    
+
     // Registrar un perdedor en la lista de perdedores.
     public void registerLoser(Character loserCharacter) {
         this.getLosers_list().addAtTheEnd(loserCharacter);
@@ -199,7 +203,5 @@ public class Studio {
     public OurQueue<Character> getReinforcement_queue() {
         return reinforcement_queue;
     }
-    
-    
 
 }

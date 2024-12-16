@@ -6,8 +6,9 @@ package Main;
 
 import Classes.AIProcessor;
 import Classes.Administrator;
-import Classes.Simulator;
 import Classes.Studio;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,21 +21,21 @@ public class InitValues {
 
         Studio starWarsStudios = new Studio("Star Wars");
         Studio starTrekStudios = new Studio("Star Trek");
-        
+
         app.setIa(new AIProcessor());
         Administrator admin = new Administrator(starWarsStudios, starTrekStudios, app.getSemaphore(), app.getIa());
         app.setAdmin(admin);
         app.getAdmin().getAI().setAdmin(admin);
 
-//        Simulator simulation = new Simulator(app.getIa(), app.getAdmin(), app.getSemaphore());
-//
-//        app.setSimulation(simulation);
-//        app.getSimulation().getAI().setAdmin(admin);
-//        app.getSimulation().setFirstStudio(starWarsStudios);
-//        app.getSimulation().setSecondStudio(starTrekStudios);
-
         // Iniciar simulacion (crear personajes)
         app.getAdmin().initializeSimulation();
 
+        // Esperar a que el hilo Administrator termine
+        try {
+            app.getAdmin().join(); // Esperar a que `Administrator` finalice
+            app.getIa().join(); // Esperar a que `AIProcessor` finalice
+        } catch (InterruptedException ex) {
+            Logger.getLogger(InitValues.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

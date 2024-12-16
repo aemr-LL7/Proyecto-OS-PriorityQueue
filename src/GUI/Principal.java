@@ -78,11 +78,11 @@ public class Principal extends javax.swing.JFrame {
         updateQueueVisual(swQueue1, starWarsPriority1);
         updateQueueVisual(swQueue2, starWarsPriority2);
         updateQueueVisual(swQueue3, starWarsPriority3);
+        updateQueueVisual(swReinQueue, starWarsRQ);
+        
         updateQueueVisual(stQueue1, starTrekPriority1);
         updateQueueVisual(stQueue2, starTrekPriority2);
-        updateQueueVisual(stQueue3, starTrekPriority3);
-
-        updateQueueVisual(swReinQueue, starWarsRQ);
+        updateQueueVisual(stQueue3, starTrekPriority3);        
         updateQueueVisual(stReinQueue, starTrekRQ);
     }
 
@@ -142,7 +142,11 @@ public class Principal extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jLabel25 = new javax.swing.JLabel();
         roundCounterLabel = new javax.swing.JLabel();
-        jLabel29 = new javax.swing.JLabel();
+        lastWinnerLabel = new javax.swing.JLabel();
+        jLabel30 = new javax.swing.JLabel();
+        lastEliminatedLabel = new javax.swing.JLabel();
+        jLabel32 = new javax.swing.JLabel();
+        jLabel33 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         battleDurationSlider = new javax.swing.JSlider();
         jLabel8 = new javax.swing.JLabel();
@@ -161,9 +165,9 @@ public class Principal extends javax.swing.JFrame {
         FightPanel = new javax.swing.JPanel();
         IAStatusLabel = new javax.swing.JLabel();
         IAStatusTitle = new javax.swing.JLabel();
-        jLabel30 = new javax.swing.JLabel();
+        currentSWHP = new javax.swing.JLabel();
         stFighterNameLabel = new javax.swing.JLabel();
-        jLabel32 = new javax.swing.JLabel();
+        currentSTHP = new javax.swing.JLabel();
         swFighterNameLabel = new javax.swing.JLabel();
         winnerLabel = new javax.swing.JLabel();
         SWFighterCard = new javax.swing.JPanel();
@@ -171,6 +175,7 @@ public class Principal extends javax.swing.JFrame {
         STFighterCard = new javax.swing.JPanel();
         STImageLabel = new javax.swing.JLabel();
         announcerLabel = new javax.swing.JLabel();
+        announcerDescLabel = new javax.swing.JLabel();
         swAgilityLabel = new javax.swing.JLabel();
         jLabel44 = new javax.swing.JLabel();
         swHPLabel = new javax.swing.JLabel();
@@ -178,6 +183,7 @@ public class Principal extends javax.swing.JFrame {
         stHPLabel = new javax.swing.JLabel();
         stDefenseLabel = new javax.swing.JLabel();
         stAgilityLabel = new javax.swing.JLabel();
+        bgLabel = new javax.swing.JLabel();
         SWQueuePanel = new javax.swing.JPanel();
         swQueue1 = new javax.swing.JScrollPane();
         swQueue2 = new javax.swing.JScrollPane();
@@ -185,8 +191,9 @@ public class Principal extends javax.swing.JFrame {
         jLabel13 = new javax.swing.JLabel();
         jLabel20 = new javax.swing.JLabel();
         jLabel21 = new javax.swing.JLabel();
-        jLabel16 = new javax.swing.JLabel();
+        winsSWLabel = new javax.swing.JLabel();
         SWLogoLabel = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
         STQueuePanel = new javax.swing.JPanel();
         stQueue1 = new javax.swing.JScrollPane();
         stQueue2 = new javax.swing.JScrollPane();
@@ -194,8 +201,9 @@ public class Principal extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
-        jLabel19 = new javax.swing.JLabel();
+        winsSTLabel = new javax.swing.JLabel();
         STLogoLabel = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -235,12 +243,36 @@ public class Principal extends javax.swing.JFrame {
         roundCounterLabel.setFont(new java.awt.Font("Tw Cen MT Condensed Extra Bold", 0, 36)); // NOI18N
         roundCounterLabel.setForeground(new java.awt.Color(255, 255, 255));
         roundCounterLabel.setText("0");
-        jPanel1.add(roundCounterLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 70, -1, -1));
+        jPanel1.add(roundCounterLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 70, -1, -1));
 
-        jLabel29.setFont(new java.awt.Font("Tw Cen MT Condensed Extra Bold", 0, 36)); // NOI18N
-        jLabel29.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel29.setText("ROUND:");
-        jPanel1.add(jLabel29, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 70, -1, -1));
+        lastWinnerLabel.setFont(new java.awt.Font("Tw Cen MT Condensed Extra Bold", 0, 16)); // NOI18N
+        lastWinnerLabel.setForeground(new java.awt.Color(255, 255, 255));
+        lastWinnerLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lastWinnerLabel.setText("[...]");
+        jPanel1.add(lastWinnerLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 40, 220, -1));
+
+        jLabel30.setFont(new java.awt.Font("Tw Cen MT Condensed Extra Bold", 0, 36)); // NOI18N
+        jLabel30.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel30.setText("ROUND:");
+        jPanel1.add(jLabel30, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 70, -1, -1));
+
+        lastEliminatedLabel.setFont(new java.awt.Font("Tw Cen MT Condensed Extra Bold", 0, 16)); // NOI18N
+        lastEliminatedLabel.setForeground(new java.awt.Color(255, 255, 255));
+        lastEliminatedLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lastEliminatedLabel.setText("[...]");
+        jPanel1.add(lastEliminatedLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 90, 220, -1));
+
+        jLabel32.setFont(new java.awt.Font("Tw Cen MT Condensed Extra Bold", 0, 16)); // NOI18N
+        jLabel32.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel32.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel32.setText("Último ganador");
+        jPanel1.add(jLabel32, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 20, 100, -1));
+
+        jLabel33.setFont(new java.awt.Font("Tw Cen MT Condensed Extra Bold", 0, 16)); // NOI18N
+        jLabel33.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel33.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel33.setText("Último eliminado");
+        jPanel1.add(jLabel33, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 70, -1, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 0, 730, 120));
 
@@ -309,26 +341,28 @@ public class Principal extends javax.swing.JFrame {
         FightPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         IAStatusLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 24)); // NOI18N
+        IAStatusLabel.setForeground(new java.awt.Color(255, 255, 255));
         IAStatusLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         IAStatusLabel.setText("estado actual");
         FightPanel.add(IAStatusLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 490, -1, -1));
 
         IAStatusTitle.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 36)); // NOI18N
+        IAStatusTitle.setForeground(new java.awt.Color(255, 255, 255));
         IAStatusTitle.setText("IA STATUS: ");
         FightPanel.add(IAStatusTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 480, -1, -1));
 
-        jLabel30.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 24)); // NOI18N
-        jLabel30.setText("Vida actual: ");
-        FightPanel.add(jLabel30, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 380, -1, -1));
+        currentSWHP.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 24)); // NOI18N
+        currentSWHP.setText("Vida actual: ");
+        FightPanel.add(currentSWHP, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 380, -1, -1));
 
         stFighterNameLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 24)); // NOI18N
         stFighterNameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         stFighterNameLabel.setText("NAME");
         FightPanel.add(stFighterNameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 340, -1, -1));
 
-        jLabel32.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 24)); // NOI18N
-        jLabel32.setText("Vida actual: ");
-        FightPanel.add(jLabel32, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 380, -1, -1));
+        currentSTHP.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 24)); // NOI18N
+        currentSTHP.setText("Vida actual: ");
+        FightPanel.add(currentSTHP, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 380, -1, -1));
 
         swFighterNameLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 24)); // NOI18N
         swFighterNameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -338,14 +372,14 @@ public class Principal extends javax.swing.JFrame {
         winnerLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
         winnerLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         winnerLabel.setText("Ganador");
-        FightPanel.add(winnerLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 220, 80, -1));
+        FightPanel.add(winnerLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 220, 90, -1));
 
         SWFighterCard.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         SWImageLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         SWFighterCard.add(SWImageLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(4, 5, 190, 230));
 
-        FightPanel.add(SWFighterCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 90, 200, 240));
+        FightPanel.add(SWFighterCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 90, 200, 240));
 
         STFighterCard.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -354,9 +388,17 @@ public class Principal extends javax.swing.JFrame {
 
         FightPanel.add(STFighterCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 90, 190, 240));
 
-        announcerLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 18)); // NOI18N
+        announcerLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
+        announcerLabel.setForeground(new java.awt.Color(255, 255, 255));
+        announcerLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         announcerLabel.setText("ANNOUNCER");
-        FightPanel.add(announcerLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 30, -1, -1));
+        FightPanel.add(announcerLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 10, 270, -1));
+
+        announcerDescLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 18)); // NOI18N
+        announcerDescLabel.setForeground(new java.awt.Color(255, 255, 255));
+        announcerDescLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        announcerDescLabel.setText("Description");
+        FightPanel.add(announcerDescLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 40, 410, 20));
 
         swAgilityLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
         swAgilityLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
@@ -366,8 +408,8 @@ public class Principal extends javax.swing.JFrame {
 
         jLabel44.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
         jLabel44.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel44.setText("Ganador");
-        FightPanel.add(jLabel44, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 180, 80, -1));
+        jLabel44.setText("Ganador:");
+        FightPanel.add(jLabel44, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 180, 90, -1));
 
         swHPLabel.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 20)); // NOI18N
         swHPLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
@@ -399,6 +441,11 @@ public class Principal extends javax.swing.JFrame {
         stAgilityLabel.setText("0");
         FightPanel.add(stAgilityLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 210, -1, -1));
 
+        bgLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        bgLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Assets/bg_image.jpg"))); // NOI18N
+        bgLabel.setText("image");
+        FightPanel.add(bgLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 730, 540));
+
         getContentPane().add(FightPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 120, 730, 540));
 
         SWQueuePanel.setBackground(new java.awt.Color(0, 0, 0));
@@ -425,15 +472,20 @@ public class Principal extends javax.swing.JFrame {
         jLabel21.setText("COLA PRIORIDAD 2");
         SWQueuePanel.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, -1, -1));
 
-        jLabel16.setFont(new java.awt.Font("Tw Cen MT", 1, 36)); // NOI18N
-        jLabel16.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel16.setText("VICTORIAS: 0");
-        SWQueuePanel.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, -1, -1));
+        winsSWLabel.setFont(new java.awt.Font("Tw Cen MT", 1, 32)); // NOI18N
+        winsSWLabel.setForeground(new java.awt.Color(255, 255, 255));
+        winsSWLabel.setText("0");
+        SWQueuePanel.add(winsSWLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 140, -1, -1));
 
         SWLogoLabel.setForeground(new java.awt.Color(255, 255, 255));
         SWLogoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         SWLogoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Assets/logos/starwars-logo.png"))); // NOI18N
         SWQueuePanel.add(SWLogoLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, -1, 80));
+
+        jLabel22.setFont(new java.awt.Font("Tw Cen MT", 1, 32)); // NOI18N
+        jLabel22.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel22.setText("VICTORIAS:");
+        SWQueuePanel.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, -1, -1));
 
         getContentPane().add(SWQueuePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 270, 660));
 
@@ -461,15 +513,20 @@ public class Principal extends javax.swing.JFrame {
         jLabel18.setText("COLA PRIORIDAD 2");
         STQueuePanel.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, -1, -1));
 
-        jLabel19.setFont(new java.awt.Font("Tw Cen MT", 1, 36)); // NOI18N
-        jLabel19.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel19.setText("VICTORIAS: 0");
-        STQueuePanel.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 130, -1, -1));
+        winsSTLabel.setFont(new java.awt.Font("Tw Cen MT", 1, 32)); // NOI18N
+        winsSTLabel.setForeground(new java.awt.Color(255, 255, 255));
+        winsSTLabel.setText("0");
+        STQueuePanel.add(winsSTLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 130, -1, -1));
 
         STLogoLabel.setForeground(new java.awt.Color(255, 255, 255));
         STLogoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         STLogoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Assets/logos/startrek-logo.png"))); // NOI18N
         STQueuePanel.add(STLogoLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, -1, 60));
+
+        jLabel23.setFont(new java.awt.Font("Tw Cen MT", 1, 32)); // NOI18N
+        jLabel23.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel23.setText("VICTORIAS:");
+        STQueuePanel.add(jLabel23, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 130, -1, -1));
 
         getContentPane().add(STQueuePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(1000, 0, 270, 660));
 
@@ -479,7 +536,8 @@ public class Principal extends javax.swing.JFrame {
     private void battleDurationSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_battleDurationSliderStateChanged
         // TODO add your handling code here:
         int newSpeed = this.getBattleDurationSlider().getValue();
-        app.getApp().setBattleDuration(newSpeed);
+        System.out.println(newSpeed);
+        //app.getApp().setBattleDuration(newSpeed);
     }//GEN-LAST:event_battleDurationSliderStateChanged
 
     /**
@@ -529,23 +587,27 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JLabel SWImageLabel;
     private javax.swing.JLabel SWLogoLabel;
     private javax.swing.JPanel SWQueuePanel;
+    private javax.swing.JLabel announcerDescLabel;
     private javax.swing.JLabel announcerLabel;
     private javax.swing.JSlider battleDurationSlider;
+    private javax.swing.JLabel bgLabel;
+    private javax.swing.JLabel currentSTHP;
+    private javax.swing.JLabel currentSWHP;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel25;
-    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel32;
+    private javax.swing.JLabel jLabel33;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel44;
     private javax.swing.JLabel jLabel5;
@@ -565,6 +627,8 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JSlider jSlider2;
     private javax.swing.JSlider jSlider4;
+    private javax.swing.JLabel lastEliminatedLabel;
+    private javax.swing.JLabel lastWinnerLabel;
     private javax.swing.JLabel roundCounterLabel;
     private javax.swing.JLabel stAgilityLabel;
     private javax.swing.JLabel stDefenseLabel;
@@ -583,6 +647,8 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JScrollPane swQueue3;
     private javax.swing.JScrollPane swReinQueue;
     private javax.swing.JLabel winnerLabel;
+    private javax.swing.JLabel winsSTLabel;
+    private javax.swing.JLabel winsSWLabel;
     // End of variables declaration//GEN-END:variables
 
     /**
@@ -905,6 +971,90 @@ public class Principal extends javax.swing.JFrame {
      */
     public void setSWImageLabel(javax.swing.JLabel SWImageLabel) {
         this.SWImageLabel = SWImageLabel;
+    }
+
+    /**
+     * @return the winsSTLabel
+     */
+    public javax.swing.JLabel getWinsSTLabel() {
+        return winsSTLabel;
+    }
+
+    /**
+     * @param winsSTLabel the winsSTLabel to set
+     */
+    public void setWinsSTLabel(javax.swing.JLabel winsSTLabel) {
+        this.winsSTLabel = winsSTLabel;
+    }
+
+    /**
+     * @return the winsSWLabel
+     */
+    public javax.swing.JLabel getWinsSWLabel() {
+        return winsSWLabel;
+    }
+
+    /**
+     * @param winsSWLabel the winsSWLabel to set
+     */
+    public void setWinsSWLabel(javax.swing.JLabel winsSWLabel) {
+        this.winsSWLabel = winsSWLabel;
+    }
+
+    /**
+     * @return the currentSTHP
+     */
+    public javax.swing.JLabel getCurrentSTHP() {
+        return currentSTHP;
+    }
+
+    /**
+     * @return the currentSWHP
+     */
+    public javax.swing.JLabel getCurrentSWHP() {
+        return currentSWHP;
+    }
+
+    /**
+     * @return the announcerDescLabel
+     */
+    public javax.swing.JLabel getAnnouncerDescLabel() {
+        return announcerDescLabel;
+    }
+
+    /**
+     * @param announcerDescLabel the announcerDescLabel to set
+     */
+    public void setAnnouncerDescLabel(javax.swing.JLabel announcerDescLabel) {
+        this.announcerDescLabel = announcerDescLabel;
+    }
+
+    /**
+     * @return the lastWinnerLabel
+     */
+    public javax.swing.JLabel getLastWinnerLabel() {
+        return lastWinnerLabel;
+    }
+
+    /**
+     * @param lastWinnerLabel the lastWinnerLabel to set
+     */
+    public void setLastWinnerLabel(javax.swing.JLabel lastWinnerLabel) {
+        this.lastWinnerLabel = lastWinnerLabel;
+    }
+
+    /**
+     * @return the lastEliminatedLabel
+     */
+    public javax.swing.JLabel getLastEliminatedLabel() {
+        return lastEliminatedLabel;
+    }
+
+    /**
+     * @param lastEliminatedLabel the lastEliminatedLabel to set
+     */
+    public void setLastEliminatedLabel(javax.swing.JLabel lastEliminatedLabel) {
+        this.lastEliminatedLabel = lastEliminatedLabel;
     }
 
 }

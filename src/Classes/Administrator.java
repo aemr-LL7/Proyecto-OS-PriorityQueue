@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -28,6 +29,10 @@ public class Administrator extends Thread {
         this.secondStudio = studioStarTrek;
         this.semaphore = mutex;
         this.AI = ai;
+    }
+
+    public boolean shouldTerminateSimulation() {
+        return this.firstStudio.areAllQueuesEmpty() || this.secondStudio.areAllQueuesEmpty();
     }
 
     public void initializeSimulation() {
@@ -52,20 +57,29 @@ public class Administrator extends Thread {
         // Iniciar hilos
         this.start();
         this.getAI().start();
+
     }
 
     @Override
     public void run() {
         while (true) {
             try {
+                // Verificar condicion de terminacion
+                if (this.shouldTerminateSimulation()) {
+                    System.out.println("Simulacion finalizada: Todas las colas de uno de los estudios estan vacias");
+                    
+                    this.getSemaphore().release();
+                    this.getAI().getSemaphore().release();
+                    break; // Salir del bucle
+                }
+                
+                int duration = Principal.getPrincipalInstance().getBattleDurationSlider().getValue();
+                this.getAI().setDuration(duration);
                 System.out.println("DURACION BATALLAS: " + this.getAI().getDuration());
 
-                this.firstStudio.printQueueStatus();
-                this.secondStudio.printQueueStatus();
-
                 // Actualizar colas de refuerzo
-                this.firstStudio.updateReinforcementQueue();
-                this.secondStudio.updateReinforcementQueue();
+                this.getFirstStudio().updateReinforcementQueue();
+                this.getSecondStudio().updateReinforcementQueue();
 
                 // Chequear dos ciclos de revision para crear nuevos personajes
                 if (this.getNumRound() == 2) {
@@ -83,8 +97,9 @@ public class Administrator extends Thread {
                 // Actualizar las colas en la UI
                 //=> UI
                 Principal.getPrincipalInstance().updateQueuesUI();
+
                 this.getSemaphore().release();
-                Thread.sleep(100);
+                Thread.sleep(500);
                 this.getSemaphore().acquire();
 
                 this.setNumRound(this.getNumRound() + 1);
@@ -99,8 +114,20 @@ public class Administrator extends Thread {
 
             } catch (InterruptedException ex) {
                 Logger.getLogger(Administrator.class.getName()).log(Level.SEVERE, null, ex);
+                Thread.currentThread().interrupt();
             }
         }
+        
+        // Finalizacion de recursos
+        System.out.println("Liberando recursos y cerrando hilos...");
+        this.getAI().interrupt(); // Detener el hilo de la IA
+        Thread.currentThread().interrupt();
+        System.out.println("AIProcessor interrumpido");
+        System.out.println("ADMIN interrumpido");
+        
+        // Cerrar el ciclo del programa
+        JOptionPane.showMessageDialog(null, "Simulación terminada.\n=> Todas las colas de uno de los estudios estan vacias\n\nCerrando aplicación...", "Exiting Program", 3);
+        System.exit(0);
     }
 
     private void addNewCharToQueues() {

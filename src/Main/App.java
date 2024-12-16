@@ -20,7 +20,6 @@ public class App {
 
     private static Semaphore semaphore = new Semaphore(1);
     private static int battleDuration = 10;
-    // private static Simulator simulation;
     private static Administrator admin;
     private static AIProcessor ia;
 
